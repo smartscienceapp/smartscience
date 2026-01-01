@@ -61,6 +61,7 @@ interface Bab {
 }
 
 export default function TautkanMataPelajaranPage() {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [currentUser, setCurrentUser] = useState<string>("unknown")
@@ -92,7 +93,7 @@ export default function TautkanMataPelajaranPage() {
     const fetchData = async () => {
         setIsKelasLoading(true)
         try {
-            const kelasRes = await axios.post("http://127.0.0.1:8000/api/v1/kelas/list_kelas")
+            const kelasRes = await axios.post(`${API_URL}/api/v1/kelas/list_kelas`)
             if (kelasRes.data?.kelas) {
                 setKelasList(kelasRes.data.kelas)
             } else if (Array.isArray(kelasRes.data)) {
@@ -146,7 +147,7 @@ export default function TautkanMataPelajaranPage() {
 
         try {
             const payload = { id_kelas: 0 }
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/mapel/list_mapel", payload)
+            const response = await axios.post(`${API_URL}/api/v1/mapel/list_mapel`, payload)
             if (response.data?.mapel) {
                 setMataPelajaranList(response.data.mapel)
             } else if (Array.isArray(response.data)) {
@@ -175,7 +176,7 @@ export default function TautkanMataPelajaranPage() {
         try {
             const payload = { id_mapel: value, id_kelas: 0}
             console.log(payload)
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/bab/list_bab", payload)
+            const response = await axios.post(`${API_URL}/api/v1/bab/list_bab`, payload)
             if (response.data?.bab) {
                 setBabList(response.data.bab)
             } else if (Array.isArray(response.data)) {
@@ -220,7 +221,7 @@ export default function TautkanMataPelajaranPage() {
                 id_bab: Number(formData.id_bab),
                 created_by: currentUser,
             }
-            await axios.post("http://127.0.0.1:8000/api/v1/bab/tautkan_bab", payload)
+            await axios.post(`${API_URL}/api/v1/bab/tautkan_bab`, payload)
             setAlertData({
                 title: "Berhasil",
                 description: "Bab berhasil ditautkan ke mata pelajaran dan kelas.",

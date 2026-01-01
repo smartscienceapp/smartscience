@@ -67,6 +67,8 @@ interface DecodedToken {
     id_user?: number;
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+
 const TOBStatus = ({ id_tob, id_user }: { id_tob: number; id_user: number | undefined }) => {
     const [status, setStatus] = useState<string>("...")
 
@@ -75,7 +77,7 @@ const TOBStatus = ({ id_tob, id_user }: { id_tob: number; id_user: number | unde
 
         const fetchStatus = async () => {
             try {
-                const response = await axios.post("http://127.0.0.1:8000/api/v1/tob/status_pengerjaan", {
+                const response = await axios.post(`${API_URL}/api/v1/tob/status_pengerjaan`, {
                     id_user,
                     id_tob
                 })
@@ -136,7 +138,7 @@ export default function ListTOBPage() {
                     const fetchMapel = async () => {
                         try {
                             const payload = { id_kelas: kelasId }
-                            const response = await axios.post("http://127.0.0.1:8000/api/v1/mapel/list_mapel", payload)
+                            const response = await axios.post(`${API_URL}/api/v1/mapel/list_mapel`, payload)
                             if (response.data && response.data.mapel) {
                                 setListMapel(response.data.mapel)
                             } else if (Array.isArray(response.data)) {
@@ -164,7 +166,7 @@ export default function ListTOBPage() {
                 setIsLoading(true)
                 try {
                     const payload = { id_mapel: parseInt(paramMapel), id_kelas: currentKelas }
-                    const response = await axios.post("http://127.0.0.1:8000/api/v1/tob/post/list_tob", payload)
+                    const response = await axios.post(`${API_URL}/api/v1/tob/post/list_tob`, payload)
                     if (response.data && response.data.tob) {
                         setDataTOB(response.data.tob)
                     } else if (Array.isArray(response.data)) {
@@ -213,7 +215,7 @@ export default function ListTOBPage() {
         try {
             const payload = { id_mapel: parseInt(mapelId), id_kelas: currentKelas }
 
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/tob/post/list_tob", payload)
+            const response = await axios.post(`${API_URL}/api/v1/tob/post/list_tob`, payload)
 
             if (response.data && response.data.tob) {
                 setDataTOB(response.data.tob)
@@ -246,7 +248,7 @@ export default function ListTOBPage() {
         if (!currentUserId) return
 
         try {
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/tob/status_pengerjaan", {
+            const response = await axios.post(`${API_URL}/api/v1/tob/status_pengerjaan`, {
                 id_user: currentUserId,
                 id_tob
             })

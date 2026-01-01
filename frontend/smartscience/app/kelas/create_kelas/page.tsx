@@ -8,18 +8,7 @@ import { UserMenu } from "@/components/dashboard/user-menu"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Check, ChevronsUpDown } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { cn } from "@/lib/utils"
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-} from "@/components/ui/command"
+import { Button } from "@/components/ui/button" 
 import {
     Dialog,
     DialogContent,
@@ -27,12 +16,7 @@ import {
     DialogHeader,
     DialogFooter,
     DialogTitle,
-} from "@/components/ui/dialog"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/dialog" 
 import Cookies from "js-cookie"
 import { jwtDecode } from "jwt-decode"
 import { ArrowLeft, Loader2, Save } from "lucide-react"
@@ -46,6 +30,7 @@ interface DecodedToken {
 }
 
 export default function CreateKelasPage() {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [currentUser, setCurrentUser] = useState<string>("unknown")
@@ -111,7 +96,7 @@ export default function CreateKelasPage() {
                 nama_kelas: formData.nama_kelas,
                 created_by: currentUser,
             }
-            await axios.post("http://127.0.0.1:8000/api/v1/kelas/create_kelas", payload)
+            await axios.post(`${API_URL}/api/v1/kelas/create_kelas`, payload)
             setAlertData({
                 title: "Berhasil",
                 description: "Kelas berhasil dibuat.",

@@ -34,6 +34,7 @@ interface SoalTOB {
 }
 
 export default function ListSoalPage() {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const searchParams = useSearchParams()
     const id_tob = searchParams.get("id_tob")
@@ -54,7 +55,7 @@ export default function ListSoalPage() {
     const fetchSoal = async (id: number) => {
         setIsLoading(true)
         try {
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/tob/post/list_soal_tob", {
+            const response = await axios.post(`${API_URL}/api/v1/tob/post/list_soal_tob`, {
                 id_tob: id
             })
             if (response.data && response.data.soaltob) {
@@ -78,7 +79,7 @@ export default function ListSoalPage() {
         if (!id_tob || !soalToDelete) return
 
         try {
-            await axios.post("http://127.0.0.1:8000/api/v1/tob/delete_soal_tob", {
+            await axios.post(`${API_URL}/api/v1/tob/delete_soal_tob`, {
                 id_soal: soalToDelete,
                 id_tob: parseInt(id_tob)
             })

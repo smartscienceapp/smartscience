@@ -26,6 +26,7 @@ interface SoalPreview {
  
 
 export default function PreviewTobPage() {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const searchParams = useSearchParams()
     const id_tob = searchParams.get("id_tob")
@@ -45,7 +46,7 @@ export default function PreviewTobPage() {
         setIsLoading(true)
         try {
             // Menggunakan endpoint preview (sesuaikan jika endpoint berbeda)
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/soal/get_detail_soal_full", {
+            const response = await axios.post(`${API_URL}/api/v1/soal/get_detail_soal_full`, {
                 id_tob: id
             })
             

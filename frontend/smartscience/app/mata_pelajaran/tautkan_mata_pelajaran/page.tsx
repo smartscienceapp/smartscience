@@ -6,11 +6,9 @@ import { useRouter } from "next/navigation"
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { UserMenu } from "@/components/dashboard/user-menu"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Check, ChevronsUpDown } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 import {
     Command,
@@ -56,6 +54,7 @@ interface MataPelajaran {
 }
 
 export default function TautkanMataPelajaranPage() {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [currentUser, setCurrentUser] = useState<string>("unknown")
@@ -83,7 +82,7 @@ export default function TautkanMataPelajaranPage() {
     const fetchData = async () => {
         setIsKelasLoading(true)
         try {
-            const kelasRes = await axios.post("http://127.0.0.1:8000/api/v1/kelas/list_kelas")
+            const kelasRes = await axios.post(`${API_URL}/api/v1/kelas/list_kelas`)
             if (kelasRes.data?.kelas) {
                 setKelasList(kelasRes.data.kelas)
             } else if (Array.isArray(kelasRes.data)) {
@@ -136,7 +135,7 @@ export default function TautkanMataPelajaranPage() {
 
         try {
             const payload = { id_kelas: 0 }
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/mapel/list_mapel", payload)
+            const response = await axios.post(`${API_URL}/api/v1/mapel/list_mapel`, payload)
             if (response.data?.mapel) {
                 setMataPelajaranList(response.data.mapel)
             } else if (Array.isArray(response.data)) {
@@ -180,7 +179,7 @@ export default function TautkanMataPelajaranPage() {
                 id_kelas: Number(formData.id_kelas),
                 created_by: currentUser,
             }
-            await axios.post("http://127.0.0.1:8000/api/v1/mapel/tautkan_mapel", payload)
+            await axios.post(`${API_URL}/api/v1/mapel/tautkan_mapel`, payload)
             setAlertData({
                 title: "Berhasil",
                 description: "Mata pelajaran berhasil ditautkan ke kelas.",

@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Check, ChevronsUpDown } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 import {
     Command,
@@ -68,6 +67,7 @@ const supabase = createClient(
 )
 
 export default function CreateSoalPage() {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [currentUser, setCurrentUser] = useState<string>("unknown")
@@ -107,7 +107,7 @@ export default function CreateSoalPage() {
     const fetchData = async () => {
         setIsKelasLoading(true)
         try {
-            const kelasRes = await axios.post("http://127.0.0.1:8000/api/v1/kelas/list_kelas")
+            const kelasRes = await axios.post(`${API_URL}/api/v1/kelas/list_kelas`)
             if (kelasRes.data?.kelas) {
                 setKelasList(kelasRes.data.kelas)
             } else if (Array.isArray(kelasRes.data)) {
@@ -161,7 +161,7 @@ export default function CreateSoalPage() {
 
         try {
             const payload = { id_kelas: parseInt(value) }
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/mapel/list_mapel", payload)
+            const response = await axios.post(`${API_URL}/api/v1/mapel/list_mapel`, payload)
             if (response.data?.mapel) {
                 setMataPelajaranList(response.data.mapel)
             } else if (Array.isArray(response.data)) {
@@ -190,7 +190,7 @@ export default function CreateSoalPage() {
 
         try {
             const payload = { id_mapel: parseInt(value), id_kelas: parseInt(formData.id_kelas) }
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/bab/list_bab", payload)
+            const response = await axios.post(`${API_URL}/api/v1/bab/list_bab`, payload)
             if (response.data?.bab) {
                 setBabList(response.data.bab)
             } else if (Array.isArray(response.data)) {
@@ -352,7 +352,7 @@ export default function CreateSoalPage() {
                 option: JSON.stringify(options),
                 created_by: currentUser,
             }
-            await axios.post("http://127.0.0.1:8000/api/v1/soal/create_soal", payload)
+            await axios.post(`${API_URL}/api/v1/soal/create_soal`, payload)
             setAlertData({
                 title: "Berhasil",
                 description: "Soal berhasil dibuat.",

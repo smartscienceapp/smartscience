@@ -32,6 +32,7 @@ interface StudentAnswer {
 }
 
 export default function PreviewHasilTobPage() {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const searchParams = useSearchParams()
     
@@ -55,10 +56,10 @@ export default function PreviewHasilTobPage() {
         setIsLoading(true)
         try {
             const [soalRes, answerRes] = await Promise.all([
-                axios.post("http://127.0.0.1:8000/api/v1/soal/get_detail_soal_full", {
+                axios.post(`${API_URL}/api/v1/soal/get_detail_soal_full`, {
                     id_tob: parseInt(id_tob!)
                 }),
-                axios.post("http://127.0.0.1:8000/api/v1/tob/get_pengerjaan_siswa", {
+                axios.post(`${API_URL}/api/v1/tob/get_pengerjaan_siswa`, {
                     id_user: parseInt(id_user!),
                     id_tob: parseInt(id_tob!)
                 })

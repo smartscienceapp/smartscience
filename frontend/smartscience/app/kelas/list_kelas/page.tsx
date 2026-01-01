@@ -72,6 +72,7 @@ export default function ListKelasPage() {
         isSuccess: false
     })
     const [kelasList, setKelasList] = useState<Kelas[]>([])
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
 
     useEffect(() => {
         const token = Cookies.get("token")
@@ -103,7 +104,7 @@ export default function ListKelasPage() {
         if (e) e.preventDefault() 
         setIsLoading(true)
         try {
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/kelas/list_kelas")
+            const response = await axios.post(`${API_URL}/api/v1/kelas/list_kelas`)
             if (response.data && response.data.kelas) {
                 setKelasList(response.data.kelas)
             } else if (Array.isArray(response.data)) {
@@ -151,7 +152,7 @@ export default function ListKelasPage() {
             const payload = {
                 id_kelas: Number(toDelete)
             }
-            await axios.post("http://127.0.0.1:8000/api/v1/kelas/delete_kelas", payload)
+            await axios.post(`${API_URL}/api/v1/kelas/delete_kelas`, payload)
             handleFilter()
         } catch (error: any) {
             const errorMessage =

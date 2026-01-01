@@ -51,6 +51,7 @@ interface DecodedToken {
 }
 
 export default function CreateUserPage() {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [userRole, setUserRole] = useState<string | null>(null)
@@ -85,8 +86,8 @@ export default function CreateUserPage() {
       try {
         // KEMBALIKAN API CALL DISINI
         const [roleRes, kelasRes] = await Promise.all([
-          axios.get("http://127.0.0.1:8000/api/v1/users/get_role_detail"),
-          axios.get("http://127.0.0.1:8000/api/v1/users/get_kelas_detail"),
+          axios.get(`${API_URL}/api/v1/users/get_role_detail`),
+          axios.post(`${API_URL}/api/v1/kelas/list_kelas`),
         ])
 
         if (roleRes.data?.roles) setRoles(roleRes.data.roles)
@@ -172,7 +173,7 @@ export default function CreateUserPage() {
         created_by: userRole || "system",
       }
 
-      await axios.post("http://127.0.0.1:8000/api/v1/users/create_user", payload)
+      await axios.post(`${API_URL}/api/v1/users/create_user`, payload)
       setAlertData({
           title: "Berhasil",
           description: "User created successfully!",

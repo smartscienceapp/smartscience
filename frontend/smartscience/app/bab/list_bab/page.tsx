@@ -67,6 +67,7 @@ interface Bab {
 }
 
 export default function ListBabPage() {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [currentUser, setCurrentUser] = useState<string>("unknown")
@@ -100,7 +101,7 @@ export default function ListBabPage() {
     const fetchData = async () => {
         setIsKelasLoading(true)
         try {
-            const kelasRes = await axios.post("http://127.0.0.1:8000/api/v1/kelas/list_kelas")
+            const kelasRes = await axios.post(`${API_URL}/api/v1/kelas/list_kelas`)
             if (kelasRes.data?.kelas) {
                 setKelasList(kelasRes.data.kelas)
             } else if (Array.isArray(kelasRes.data)) {
@@ -168,7 +169,7 @@ export default function ListBabPage() {
 
         try {
             const payload = { id_kelas: parseInt(value) }
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/mapel/list_mapel", payload)
+            const response = await axios.post(`${API_URL}/api/v1/mapel/list_mapel`, payload)
             if (response.data?.mapel) {
                 setMataPelajaranList(response.data.mapel)
             } else if (Array.isArray(response.data)) {
@@ -215,7 +216,7 @@ export default function ListBabPage() {
                 id_kelas: Number(filterIds ? filterIds.id_kelas : formData.id_kelas),
             }
             console.log(payload)
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/bab/list_bab", payload)
+            const response = await axios.post(`${API_URL}/api/v1/bab/list_bab`, payload)
             if (response.data && response.data.bab) {
                 setBabList(response.data.bab)
             } else if (Array.isArray(response.data)) {
@@ -263,7 +264,7 @@ export default function ListBabPage() {
             const payload = {
                 id_bab: Number(toDelete)
             }
-            await axios.post("http://127.0.0.1:8000/api/v1/bab/delete_bab", payload)
+            await axios.post(`${API_URL}/api/v1/bab/delete_bab`, payload)
             handleFilter()
         } catch (error: any) {
             const errorMessage =

@@ -80,7 +80,8 @@ class SoalUpdate(BaseModel) :
     option : str | None = None 
     created_by: str | None = None   
     
-    
+class DeleteSoal(BaseModel):
+    id_soal: int
     
     
 class TOBCreate(BaseModel):

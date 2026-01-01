@@ -26,6 +26,7 @@ const supabase = createClient(
 )
 
 export default function EditSoalPage() {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const searchParams = useSearchParams()
     const id_soal = searchParams.get("id_soal")
@@ -50,7 +51,7 @@ export default function EditSoalPage() {
         setIsLoading(true)
         try {
             // Endpoint untuk mengambil detail soal
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/soal/get_detail_soal", {
+            const response = await axios.post(`${API_URL}/api/v1/soal/get_detail_soal`, {
                 id_soal: id
             })
             
@@ -200,7 +201,7 @@ export default function EditSoalPage() {
                 option: JSON.stringify(options) // Convert array object ke string JSON
             }
 
-            await axios.post("http://127.0.0.1:8000/api/v1/soal/update_soal", payload)
+            await axios.post(`${API_URL}/api/v1/soal/update_soal`, payload)
             
             alert("Soal berhasil diperbarui!")
             router.back()

@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Check, ChevronsUpDown } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 import {
     Command,
@@ -51,6 +50,7 @@ interface Kelas {
 }
 
 export default function CreateMataPelajaranPage() {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [currentUser, setCurrentUser] = useState<string>("unknown")
@@ -74,7 +74,7 @@ export default function CreateMataPelajaranPage() {
 
     const fetchData = async () => {
         try {
-            const kelasRes = await axios.post("http://127.0.0.1:8000/api/v1/kelas/list_kelas")
+            const kelasRes = await axios.post(`${API_URL}/api/v1/kelas/list_kelas`)
             if (kelasRes.data?.kelas) {
                 setKelasList(kelasRes.data.kelas)
             } else if (Array.isArray(kelasRes.data)) {
@@ -147,7 +147,7 @@ export default function CreateMataPelajaranPage() {
                 id_kelas: Number(formData.id_kelas),
                 created_by: currentUser,
             }
-            await axios.post("http://127.0.0.1:8000/api/v1/mapel/create_mapel", payload)
+            await axios.post(`${API_URL}/api/v1/mapel/create_mapel`, payload)
             setAlertData({
                 title: "Berhasil",
                 description: "Mata Pelajaran berhasil dibuat.",

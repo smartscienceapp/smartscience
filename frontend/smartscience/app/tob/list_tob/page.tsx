@@ -51,6 +51,7 @@ interface DecodedToken {
 }
 
 export default function ListTOBPage() {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const searchParams = useSearchParams()
     const [isLoading, setIsLoading] = useState(false)
@@ -80,7 +81,7 @@ export default function ListTOBPage() {
         // Ambil list kelas untuk mengisi Dropdown Filter
         const fetchKelasOptions = async () => {
             try {
-                const res = await axios.get("http://127.0.0.1:8000/api/v1/users/get_kelas_detail")
+                const res = await axios.post(`${API_URL}/api/v1/kelas/list_kelas`)
                 if (res.data && res.data.kelas) {
                     setListKelas(res.data.kelas)
                 }
@@ -97,12 +98,12 @@ export default function ListTOBPage() {
 
         if (paramKelas) {
             setSelectedKelasId(paramKelas)
-            
+
             // Fetch Mapel berdasarkan paramKelas
             const fetchMapel = async () => {
                 try {
                     const payload = { id_kelas: parseInt(paramKelas) }
-                    const response = await axios.post("http://127.0.0.1:8000/api/v1/mapel/list_mapel", payload)
+                    const response = await axios.post(`${API_URL}/api/v1/mapel/list_mapel`, payload)
                     if (response.data && response.data.mapel) {
                         setListMapel(response.data.mapel)
                     } else if (Array.isArray(response.data)) {
@@ -121,7 +122,7 @@ export default function ListTOBPage() {
                     setIsLoading(true)
                     try {
                         const payload = { id_mapel: parseInt(paramMapel), id_kelas: parseInt(paramKelas) }
-                        const response = await axios.post("http://127.0.0.1:8000/api/v1/tob/post/list_tob", payload)
+                        const response = await axios.post(`${API_URL}/api/v1/tob/post/list_tob`, payload)
                         if (response.data && response.data.tob) {
                             setDataTOB(response.data.tob)
                         } else if (Array.isArray(response.data)) {
@@ -146,7 +147,7 @@ export default function ListTOBPage() {
 
         try {
             const payload = { id_kelas: parseInt(value) }
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/mapel/list_mapel", payload)
+            const response = await axios.post(`${API_URL}/api/v1/mapel/list_mapel`, payload)
             if (response.data && response.data.mapel) {
                 setListMapel(response.data.mapel)
             } else if (Array.isArray(response.data)) {
@@ -162,13 +163,13 @@ export default function ListTOBPage() {
         if (!selectedMapelId) {
             alert("Silakan pilih mata pelajaran terlebih dahulu!")
             return
-        } 
+        }
 
         setIsLoading(true)
         try {
-            const payload = { id_mapel: parseInt(selectedMapelId), id_kelas: parseInt(selectedKelasId)}
+            const payload = { id_mapel: parseInt(selectedMapelId), id_kelas: parseInt(selectedKelasId) }
 
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/tob/post/list_tob", payload)
+            const response = await axios.post(`${API_URL}/api/v1/tob/post/list_tob`, payload)
 
             if (response.data && response.data.tob) {
                 setDataTOB(response.data.tob)
@@ -185,66 +186,68 @@ export default function ListTOBPage() {
         } finally {
             setIsLoading(false)
         }
-    } 
+    }
 
-    const handleLihatSoal = (id_tob: number) => { 
+    const handleLihatSoal = (id_tob: number) => {
         router.push(`/soal/list_soal?id_tob=${id_tob}&id_kelas=${selectedKelasId}&id_mapel=${selectedMapelId}`)
     }
 
     return (
-        <div className="flex min-h-screen">
+        <div className="flex min-h-screen bg-muted/40">
             <Sidebar />
             <div className="flex flex-1 flex-col">
-                <header className="flex h-16 items-center justify-between border-b border-border bg-background px-6">
-                    <h1 className="text-2xl font-semibold">Daftar TOB</h1>
-                    <UserMenu />
+                <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-6 shadow-sm">
+                    <h1 className="text-xl font-semibold md:text-2xl">List Mata Pelajaran</h1>
+                    <div className="ml-auto">
+                        <UserMenu />
+                    </div>
                 </header>
 
                 <main className="flex-1 p-6 bg-background">
                     <div className="max-w-4xl mx-auto space-y-6">
-
-                        {/* CARD FILTER */}
-                        <Card>
+                        <Card className="border-t-4 border-t-primary shadow-md">
                             <CardHeader>
                                 <CardTitle>Filter Data</CardTitle>
                                 <CardDescription>Pilih kelas dan mata pelajaran untuk melihat tob.</CardDescription>
                             </CardHeader>
-                            <CardContent className="flex flex-col sm:flex-row gap-4 items-end">
-                                <div className="grid w-full max-w-sm items-center gap-1.5">
-                                    <Label htmlFor="filter-kelas">Pilih Kelas</Label>
-                                    <Select value={selectedKelasId} onValueChange={handleKelasChange}>
-                                        <SelectTrigger id="filter-kelas" className="w-full">
-                                            <SelectValue placeholder="-- Pilih Kelas --" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {listKelas.map((k) => (
-                                                <SelectItem key={k.id_kelas} value={k.id_kelas.toString()}>
-                                                    {k.nama_kelas}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="grid w-full max-w-sm items-center gap-1.5">
-                                    <Label htmlFor="filter-mapel">Pilih Mata Pelajaran</Label>
-                                    <Select value={selectedMapelId} onValueChange={setSelectedMapelId} disabled={!selectedKelasId}>
-                                        <SelectTrigger id="filter-mapel" className="w-full">
-                                            <SelectValue placeholder="-- Pilih Mapel --" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {listMapel.map((m) => (
-                                                <SelectItem key={m.id_mapel} value={m.id_mapel.toString()}>
-                                                    {m.nama_mapel}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="flex gap-2">
-                                    <Button onClick={handleFilter} disabled={isLoading || !selectedMapelId}>
-                                        {isLoading ? <RefreshCcw className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
-                                        Cari TOB
-                                    </Button> 
+                            <CardContent>
+                                <div className="grid gap-6 md:grid-cols-3">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="filter-kelas">Pilih Kelas</Label>
+                                        <Select value={selectedKelasId} onValueChange={handleKelasChange}>
+                                            <SelectTrigger id="filter-kelas" className="w-full">
+                                                <SelectValue placeholder="-- Pilih Kelas --" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {listKelas.map((k) => (
+                                                    <SelectItem key={k.id_kelas} value={k.id_kelas.toString()}>
+                                                        {k.nama_kelas}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="filter-mapel">Pilih Mata Pelajaran</Label>
+                                        <Select value={selectedMapelId} onValueChange={setSelectedMapelId} disabled={!selectedKelasId}>
+                                            <SelectTrigger id="filter-mapel" className="w-full">
+                                                <SelectValue placeholder="-- Pilih Mapel --" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {listMapel.map((m) => (
+                                                    <SelectItem key={m.id_mapel} value={m.id_mapel.toString()}>
+                                                        {m.nama_mapel}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Button onClick={handleFilter} disabled={isLoading || !selectedMapelId}>
+                                            {isLoading ? <RefreshCcw className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
+                                            Cari TOB
+                                        </Button>
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
@@ -274,7 +277,7 @@ export default function ListTOBPage() {
                                                 <TableRow>
                                                     <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
                                                         {selectedMapelId
-                                                            ? "Silahkan klik 'Cari TOB' untuk melihat tob." 
+                                                            ? "Silahkan klik 'Cari TOB' untuk melihat tob."
                                                             : "Silakan pilih kelas, mata pelajaran, dan klik 'Cari TOB'."}
                                                     </TableCell>
                                                 </TableRow>

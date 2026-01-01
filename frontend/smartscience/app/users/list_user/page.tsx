@@ -42,7 +42,7 @@ import {
 } from "@/components/ui/dialog"
 import Cookies from "js-cookie"
 import { jwtDecode } from "jwt-decode"
-import { Search, RefreshCcw, FilterX, Trash2, ChevronLeft, ChevronRight } from "lucide-react"
+import {Trash2, ChevronLeft, ChevronRight } from "lucide-react"
 
 // --- Interfaces ---
 interface User {
@@ -68,6 +68,7 @@ interface DecodedToken {
 }
 
 export default function ListUser() {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [currentUser, setCurrentUser] = useState<string>("unknown")
@@ -108,7 +109,7 @@ export default function ListUser() {
         
         const fetchRoleOptions = async () => {
             try {
-                const res = await axios.get("http://127.0.0.1:8000/api/v1/users/get_role_detail")
+                const res = await axios.get(`${API_URL}/api/v1/users/get_role_detail`)
                 if (res.data && res.data.roles) {
                     setListRole(res.data.roles)
                 } 
@@ -119,7 +120,7 @@ export default function ListUser() {
 
         const fetchKelasOptions = async () => {
             try {
-                const res = await axios.post("http://127.0.0.1:8000/api/v1/kelas/list_kelas")
+                const res = await axios.post(`${API_URL}/api/v1/kelas/list_kelas`)
                 if (res.data && res.data.kelas) {
                     setListKelas(res.data.kelas)
                 } else if (Array.isArray(res.data)) {
@@ -152,7 +153,7 @@ export default function ListUser() {
                     search: searchQuery // Mengirim search query ke backend
                 }
 
-                const response = await axios.post("http://127.0.0.1:8000/api/v1/users/list_user", payload)
+                const response = await axios.post(`${API_URL}/api/v1/users/list_user`, payload)
 
                 if (response.data && response.data.users) {
                     setDataUser(response.data.users)
@@ -194,7 +195,7 @@ export default function ListUser() {
         if (!userToDelete) return
 
         try {
-            await axios.post("http://127.0.0.1:8000/api/v1/users/delete_user", {
+            await axios.post(`${API_URL}/api/v1/users/delete_user`, {
                 id_user: userToDelete
             })
             // Refresh data

@@ -21,9 +21,8 @@ interface DecodedToken {
 }
 
 export function UserMenu() {
-    const [isMounted, setIsMounted] = useState(false);
-    // Ganti dengan URL backend FastAPI Anda
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"; 
+    const [isMounted, setIsMounted] = useState(false); 
+    const API_URL = process.env.NEXT_PUBLIC_API_URL  
 
     const [user, setUser] = useState({
         user: "Pengguna",

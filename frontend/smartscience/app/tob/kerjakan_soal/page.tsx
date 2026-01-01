@@ -35,6 +35,7 @@ interface DecodedToken {
 }
 
 export default function KerjakanSoalPage() {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const searchParams = useSearchParams()
     const id_tob = searchParams.get("id_tob") 
@@ -89,7 +90,7 @@ export default function KerjakanSoalPage() {
     const fetchQuestions = async (id: number) => {
         setIsLoading(true)
         try {
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/soal/get_detail_soal_full", {
+            const response = await axios.post(`${API_URL}/api/v1/soal/get_detail_soal_full`, {
                 id_tob: id
             })
             
@@ -165,7 +166,7 @@ export default function KerjakanSoalPage() {
             }
 
             // Replace with actual submit endpoint
-            await axios.post("http://127.0.0.1:8000/api/v1/tob/submit_pengerjaan", payload)
+            await axios.post(`${API_URL}/api/v1/tob/submit_pengerjaan`, payload)
             
             alert("Jawaban berhasil dikirim!")
             router.push(`/tob/list_tob_siswa?id_mapel=${paramMapel}`)

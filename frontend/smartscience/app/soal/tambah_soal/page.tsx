@@ -63,6 +63,7 @@ interface Soal {
 }
 
 export default function TambahSoalPage() {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const searchParams = useSearchParams()
     const id_tob = searchParams.get("id_tob")
@@ -101,7 +102,7 @@ export default function TambahSoalPage() {
         // Ambil list kelas untuk mengisi Dropdown Filter
         const fetchKelasOptions = async () => {
             try {
-                const res = await axios.post("http://127.0.0.1:8000/api/v1/kelas/list_kelas")
+                const res = await axios.post(`${API_URL}/api/v1/kelas/list_kelas`)
                 if (res.data && res.data.kelas) {
                     setListKelas(res.data.kelas)
                 }
@@ -122,7 +123,7 @@ export default function TambahSoalPage() {
 
         try {
             const payload = { id_kelas: parseInt(value) }
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/mapel/list_mapel", payload)
+            const response = await axios.post(`${API_URL}/api/v1/mapel/list_mapel`, payload)
             if (response.data && response.data.mapel) {
                 setListMapel(response.data.mapel)
             } else if (Array.isArray(response.data)) {
@@ -139,7 +140,7 @@ export default function TambahSoalPage() {
         setListSoal([])
         try {
             const payload = { id_mapel: parseInt(value), id_kelas: parseInt(selectedKelasId)}
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/bab/list_bab", payload)
+            const response = await axios.post(`${API_URL}/api/v1/bab/list_bab`, payload)
             if (response.data && response.data.bab) {
                 setListBab(response.data.bab)
             } else if (Array.isArray(response.data)) {
@@ -153,7 +154,7 @@ export default function TambahSoalPage() {
     const fetchSoalTOB = async (id: number) => {
         setIsLoading(true)
         try {
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/tob/post/list_soal_tob", {
+            const response = await axios.post(`${API_URL}/api/v1/tob/post/list_soal_tob`, {
                 id_tob: id
             })
             if (response.data && response.data.soaltob) {
@@ -185,7 +186,7 @@ export default function TambahSoalPage() {
         try {
             const payload = { id_bab: parseInt(selectedBabId) }
 
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/soal/list_soal", payload)
+            const response = await axios.post(`${API_URL}/api/v1/soal/list_soal`, payload)
 
             if (response.data && response.data.soal) {
                 setListSoal(response.data.soal)
@@ -213,7 +214,7 @@ export default function TambahSoalPage() {
         if (!id_tob || !soalToPlus) return
 
         try {
-            await axios.post("http://127.0.0.1:8000/api/v1/tob/tambah_soal_tob", {
+            await axios.post(`${API_URL}/api/v1/tob/tambah_soal_tob`, {
                 id_tob: id_tob,
                 id_soal: soalToPlus,
                 created_by: currentUser

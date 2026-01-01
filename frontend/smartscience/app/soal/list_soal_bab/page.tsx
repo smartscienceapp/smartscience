@@ -72,6 +72,7 @@ interface Soal {
 }
 
 export default function ListSoalPage() {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [currentUser, setCurrentUser] = useState<string>("unknown")
@@ -110,7 +111,7 @@ export default function ListSoalPage() {
     const fetchData = async () => {
         setIsKelasLoading(true)
         try {
-            const kelasRes = await axios.post("http://127.0.0.1:8000/api/v1/kelas/list_kelas")
+            const kelasRes = await axios.post(`${API_URL}/api/v1/kelas/list_kelas`)
             if (kelasRes.data?.kelas) {
                 setKelasList(kelasRes.data.kelas)
             } else if (Array.isArray(kelasRes.data)) {
@@ -180,7 +181,7 @@ export default function ListSoalPage() {
 
         try {
             const payload = { id_kelas: parseInt(value) }
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/mapel/list_mapel", payload)
+            const response = await axios.post(`${API_URL}/api/v1/mapel/list_mapel`, payload)
             if (response.data?.mapel) {
                 setMataPelajaranList(response.data.mapel)
             } else if (Array.isArray(response.data)) {
@@ -210,7 +211,7 @@ export default function ListSoalPage() {
 
         try {
             const payload = { id_mapel: parseInt(value), id_kelas: parseInt(formData.id_kelas) }
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/bab/list_bab", payload)
+            const response = await axios.post(`${API_URL}/api/v1/bab/list_bab`, payload)
             if (response.data?.bab) {
                 setBabList(response.data.bab)
             } else if (Array.isArray(response.data)) {
@@ -256,7 +257,7 @@ export default function ListSoalPage() {
                 id_bab: Number(filterIds ? filterIds.id_bab : formData.id_bab),
             }
             console.log(payload)
-            const response = await axios.post("http://127.0.0.1:8000/api/v1/soal/list_soal", payload)
+            const response = await axios.post(`${API_URL}/api/v1/soal/list_soal`, payload)
             if (response.data && response.data.soal) {
                 setSoalList(response.data.soal)
             } else if (Array.isArray(response.data)) {
@@ -304,7 +305,7 @@ export default function ListSoalPage() {
             const payload = {
                 id_bab: Number(toDelete)
             }
-            await axios.post("http://127.0.0.1:8000/api/v1/bab/delete_bab", payload)
+            await axios.post(`${API_URL}/api/v1/soal/delete_soal`, payload)
             handleFilter()
         } catch (error: any) {
             const errorMessage =
@@ -552,7 +553,7 @@ export default function ListSoalPage() {
                                                         <TableCell>{formData.nama_bab || "-"}</TableCell>
                                                         <TableCell>{item.nama_soal}</TableCell>
                                                         <TableCell  className="w-[50px]">
-                                                            <Button variant="destructive" size="sm" onClick={() => handleDeleteClick(item.id_mapel)}>
+                                                            <Button variant="destructive" size="sm" onClick={() => handleDeleteClick(item.id_soal)}>
                                                                 <Trash2 className="h-4 w-4" />
                                                             </Button>
                                                         </TableCell>
