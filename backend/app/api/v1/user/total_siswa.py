@@ -11,4 +11,3 @@ router = APIRouter()
 def get_total_siswa(db: Session = Depends(get_db)):
     total_siswa = db.query(User).filter(User.is_active == True).count()
     return {"total_siswa": total_siswa}
-
