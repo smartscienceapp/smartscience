@@ -8,7 +8,8 @@ from app.api.v1.tob import (
     tambah_isi_tob,
     status_pengerjaan,
     submit_pengerjaan,
-    get_pengerjaan_siswa
+    get_pengerjaan_siswa,
+    total_pengerjaan_tob
 )
 
 # Buat satu router utama untuk Mata Pelajaran
@@ -23,3 +24,4 @@ tob_router.include_router(tambah_isi_tob.router)
 tob_router.include_router(status_pengerjaan.router)
 tob_router.include_router(submit_pengerjaan.router)
 tob_router.include_router(get_pengerjaan_siswa.router)
+tob_router.include_router(total_pengerjaan_tob.router)
