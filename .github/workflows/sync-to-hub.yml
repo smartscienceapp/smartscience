@@ -11,16 +11,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          fetch-depth: 0
-          lfs: true
+          python-version: '3.10'
+          
+      - name: Install Hugging Face CLI
+        run: pip install -U huggingface_hub
 
-      - name: Push to Hub
-        # PERBAIKAN 1: Hapus 'uses' yang ganda
-        # PERBAIKAN 2: Ganti versi ke @main agar pasti ketemu
-        uses: nateraw/huggingface-sync-action@main
-        with:
-          # Pastikan username dan nama space ini benar
-          target_repo: 'smartscienceapp/smartscience'
-          subdirectory: 'backend'
-          token: ${{ secrets.HF_TOKEN }}
+      - name: Login & Upload to Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        # GANTI 'USERNAME_HF/NAMA_SPACE' DI BAWAH INI DENGAN YANG BENAR
+        # Contoh: huggingface-cli upload smartscienceapp/smartscience ...
+        run: |
+          huggingface-cli upload smartscience/smartscience_backend ./backend . --repo-type space --token $HF_TOKEN
