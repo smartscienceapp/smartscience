@@ -8,6 +8,7 @@ import { UserMenu } from "@/components/dashboard/user-menu"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -41,7 +42,7 @@ import {
 } from "@/components/ui/table"
 import Cookies from "js-cookie"
 import { jwtDecode } from "jwt-decode"
-import { ArrowLeft, Trash2, Loader2, Plus } from "lucide-react"
+import { ArrowLeft, Trash2, Loader2, Plus, Search } from "lucide-react"
 
 interface DecodedToken {
     sub?: string;
@@ -96,6 +97,7 @@ export default function ListSoalPage() {
     const [openBab, setOpenBab] = useState(false)
     const [isBabLoading, setIsBabLoading] = useState(false)
     const [soalList, setSoalList] = useState<Soal[]>([])
+    const [searchQuery, setSearchQuery] = useState("")
 
     const [formData, setFormData] = useState({
         id_kelas: "",
@@ -178,6 +180,7 @@ export default function ListSoalPage() {
         setBabList([])
         setSoalList([])
         setIsMapelLoading(true)
+        setFormData((prev) => ({ ...prev, id_mapel: "", nama_mapel: "", id_bab: "", nama_bab: "" }))
 
         try {
             const payload = { id_kelas: parseInt(value) }
@@ -518,6 +521,19 @@ export default function ListSoalPage() {
                                         </Popover>
                                     </div>
                                 </div>
+                                <div className="mt-4">
+                                    <Label htmlFor="search-soal">Cari Soal</Label>
+                                    <div className="relative mt-1.5">
+                                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                            id="search-soal"
+                                            placeholder="Ketik kata kunci soal..."
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            className="pl-8"
+                                        />
+                                    </div>
+                                </div>
                             </CardContent>
                         </Card>
 
@@ -545,7 +561,9 @@ export default function ListSoalPage() {
                                                     </TableCell>
                                                 </TableRow>
                                             ) : (
-                                                soalList.map((item) => (
+                                                soalList
+                                                    .filter((item) => item.nama_soal.toLowerCase().includes(searchQuery.toLowerCase()))
+                                                    .map((item) => (
                                                     <TableRow key={item.id_soal}>
                                                         <TableCell className="font-medium">{item.id_soal}</TableCell>
                                                         <TableCell>{formData.nama_kelas || "-"}</TableCell>

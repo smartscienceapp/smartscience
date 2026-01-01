@@ -5,13 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import { 
-  LayoutDashboard, 
-  Users, 
-  BookOpen, 
-  FileText, 
-  ChevronDown, 
-  ChevronRight 
+import {
+  LayoutDashboard,
+  Users,
+  BookOpen,
+  FileText,
+  ChevronDown,
+  ChevronRight
 } from "lucide-react";
 import { cn } from "@/lib/utils"; // Pastikan punya utilitas ini, atau hapus dan pakai string biasa
 
@@ -51,18 +51,25 @@ export function Sidebar() {
     {
       title: "Overview",
       href: "/dashboard",
-      icon: LayoutDashboard, 
+      icon: LayoutDashboard,
+      roles: ["admin", "siswa"]
+    },
+    {
+      title: "Overview",
+      href: "/dashboard/dashboard_guru",
+      icon: LayoutDashboard,
+      roles: ["guru"]
     },
     {
       title: "Users",
       icon: Users,
-      roles: ["admin"],  
+      roles: ["admin"],
       items: [
         {
           title: "Create User",
           href: "/users/create_user",
           roles: ["admin"],
-        }, 
+        },
         {
           title: "List User",
           href: "/users/list_user",
@@ -76,18 +83,18 @@ export function Sidebar() {
       items: [
         {
           title: "Buat Kelas",
-          href : "/kelas/create_kelas",
-          roles : ["guru", "admin"],
+          href: "/kelas/create_kelas",
+          roles: ["guru", "admin"],
         },
         {
           title: "List Kelas",
-          href : "/kelas/list_kelas",
-          roles : ["guru", "admin"],
+          href: "/kelas/list_kelas",
+          roles: ["guru", "admin"],
         },
       ],
     },
     {
-      title : "Mata Pelajaran",
+      title: "Mata Pelajaran",
       icon: BookOpen,
       items: [
         {
@@ -131,21 +138,21 @@ export function Sidebar() {
     {
       title: "Soal",
       icon: BookOpen,
-      items: [ 
+      items: [
         {
           title: "Buat Soal",
           href: "/soal/create_soal",
           roles: ["guru"],
-        },  
+        },
         {
           title: "List Soal",
           href: "/soal/list_soal_bab",
           roles: ["guru"],
-        }, 
-      ], 
-    }, 
+        },
+      ],
+    },
     {
-      title : "TOB",
+      title: "TOB",
       icon: BookOpen,
       items: [
         {
@@ -162,14 +169,14 @@ export function Sidebar() {
           title: "List TOB Siswa",
           href: "/tob/list_tob_siswa",
           roles: ["siswa"],
-        }, 
+        },
         {
           title: "List Hasil TOB Siswa",
           href: "/tob/list_hasil_tob_siswa",
           roles: ["siswa"],
-        }, 
+        },
       ]
-    }, 
+    },
   ];
 
   // Buka submenu secara otomatis jika ada item aktif di dalamnya
@@ -191,7 +198,7 @@ export function Sidebar() {
     // Jika tidak ada batasan role, boleh akses
     if (!itemRoles || itemRoles.length === 0) return true;
     // Jika userRole belum load, sembunyikan dulu (opsional) atau tampilkan skeleton
-    if (!userRole) return false; 
+    if (!userRole) return false;
     return itemRoles.includes(userRole);
   };
 
@@ -222,7 +229,7 @@ export function Sidebar() {
               </div>
               {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             </button>
-            
+
             {/* Render Submenu */}
             {isOpen && (
               <div className="ml-4 mt-1 space-y-1 border-l pl-2">
