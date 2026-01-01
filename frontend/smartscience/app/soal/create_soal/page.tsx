@@ -37,6 +37,8 @@ import { jwtDecode } from "jwt-decode"
 import { ArrowLeft, Loader2, Save } from "lucide-react"
 import { createClient } from "@supabase/supabase-js"
 import { Textarea } from "@/components/ui/textarea"
+import "katex/dist/katex.min.css"
+import Latex from "react-latex-next"
 
 interface DecodedToken {
     sub?: string;
@@ -584,14 +586,25 @@ export default function CreateSoalPage() {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="isi_soal">Isi Soal</Label>
+                                        <div className="flex justify-between items-center">
+                                            <Label htmlFor="isi_soal">Isi Soal</Label>
+                                            <span className="text-xs text-muted-foreground">Support LaTeX (contoh: $E=mc^2$)</span>
+                                        </div>
                                         <Textarea
                                             name="isi_soal"
                                             value={formData.isi_soal}
                                             onChange={(e) => setFormData({ ...formData, isi_soal: e.target.value })}
-                                            placeholder="Isi Soal"
+                                            placeholder="Isi Soal. Gunakan tanda $ di awal dan akhir untuk rumus (misal: $x^2$)"
                                             className="min-h-[150px]"
                                         />
+                                        {formData.isi_soal && (
+                                            <div className="mt-2 rounded-md border p-4 bg-muted/50">
+                                                <p className="text-xs font-medium text-muted-foreground mb-2">Preview Tampilan:</p>
+                                                <div className="text-sm break-words">
+                                                    <Latex>{formData.isi_soal}</Latex>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="image_soal">Upload Gambar (Opsional)</Label>
