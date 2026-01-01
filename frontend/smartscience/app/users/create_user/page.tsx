@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/popover"
 import Cookies from "js-cookie"
 import { jwtDecode } from "jwt-decode"
-import {ArrowLeft, ChevronsUpDown, Save, Check, Loader2} from "lucide-react"
+import {ArrowLeft, ChevronsUpDown, Save, Check, Loader2, Copy, RefreshCw, Eye, EyeOff} from "lucide-react"
 
 
 interface Role {
@@ -61,6 +61,7 @@ export default function CreateUserPage() {
   const [kelasList, setKelasList] = useState<Kelas[]>([])
   const [openRole, setOpenRole] = useState(false)
   const [openKelas, setOpenKelas] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const [alertOpen, setAlertOpen] = useState(false)
   const [alertData, setAlertData] = useState({
       title: "",
@@ -148,6 +149,28 @@ export default function CreateUserPage() {
 
   const handleKelasChange = (value: string) => {
     setFormData((prev) => ({ ...prev, id_kelas: value }))
+  }
+
+  const generatePassword = () => {
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+"
+    let newPassword = ""
+    for (let i = 0; i < 16; i++) {
+      newPassword += charset.charAt(Math.floor(Math.random() * charset.length))
+    }
+    setFormData((prev) => ({ ...prev, password: newPassword }))
+    setShowPassword(true)
+  }
+
+  const copyToClipboard = () => {
+    if (formData.password) {
+      navigator.clipboard.writeText(formData.password)
+      setAlertData({
+        title: "Disalin",
+        description: "Password berhasil disalin ke clipboard.",
+        isSuccess: true
+      })
+      setAlertOpen(true)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -245,15 +268,49 @@ export default function CreateUserPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="password">Password</Label>
-                    <Input
-                      id="password"
-                      name="password"
-                      type="password"
-                      placeholder="Enter password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                    />
+                    <div className="flex space-x-2">
+                      <div className="relative flex-1">
+                        <Input
+                          id="password"
+                          name="password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Enter password"
+                          value={formData.password}
+                          onChange={handleChange}
+                          required
+                          className="pr-10"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </Button>
+                      </div>
+                      <Button type="button" variant="outline" size="icon" onClick={generatePassword} title="Generate Secure Password">
+                        <RefreshCw className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="icon" 
+                        onClick={copyToClipboard} 
+                        disabled={!formData.password}
+                        title="Copy Password"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <p className="text-[0.8rem] text-muted-foreground">
+                      Gunakan tombol refresh untuk membuat password aman secara otomatis.
+                    </p>
                   </div>
 
                   {/* Role Select - Data diambil dari API */}
