@@ -3,11 +3,16 @@ import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react"; // Pastikan install lucide-react jika belum
+
+interface DecodedToken {
+    role: string;
+}
 
 export default function LoginPage() {
     const [username, setUsername] = useState("");
@@ -29,8 +34,14 @@ export default function LoginPage() {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/login`, params);
             
             const token = response.data.access_token;
-            Cookies.set("token", token);   
-            router.push("/dashboard");
+            Cookies.set("token", token);  
+            
+            const decoded = jwtDecode<DecodedToken>(token);
+            if (decoded.role === "guru") {
+                router.push("/dashboard/dashboard_guru");
+            } else {
+                router.push("/dashboard");
+            }
             router.refresh();
         } catch (err: any) {
             // Logika error handling
