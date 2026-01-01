@@ -16,14 +16,11 @@ jobs:
           lfs: true
 
       - name: Push to Hub
-        uses: uses: nateraw/huggingface-sync-action@v0.0.6
+        # PERBAIKAN: Hapus kata 'uses' yang ganda
+        uses: nateraw/huggingface-sync-action@v0.0.6
         with:
-          # GANTI INI: username_huggingface/nama_space_anda
-          # Contoh: ideap-project/smartscience-api
-          target_repo: 'smartscience/smartscience_backend' 
-          
-          # PENTING: Ini agar hanya folder backend yang di-upload
+          # Pastikan 'smartscience' adalah USERNAME Hugging Face Anda
+          # dan 'smartscience_backend' adalah nama Space yang sudah dibuat.
+          target_repo: 'smartscience/smartscience_backend'
           subdirectory: 'backend'
-          
-          # Token yang kita simpan di GitHub Secrets tadi
           token: ${{ secrets.HF_TOKEN }}
