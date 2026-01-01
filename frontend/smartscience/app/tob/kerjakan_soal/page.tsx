@@ -34,6 +34,8 @@ interface DecodedToken {
     id_user?: number;
 }
 
+export const dynamic = "force-dynamic";
+
 export default function KerjakanSoalPage() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()

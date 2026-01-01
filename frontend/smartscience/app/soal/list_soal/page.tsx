@@ -33,6 +33,8 @@ interface SoalTOB {
     nama_kelas: string;
 }
 
+export const dynamic = "force-dynamic";
+
 export default function ListSoalPage() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()

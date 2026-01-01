@@ -50,6 +50,8 @@ interface DecodedToken {
     role: string;
 }
 
+export const dynamic = "force-dynamic";
+
 export default function ListTOBPage() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()

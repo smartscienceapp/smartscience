@@ -62,6 +62,8 @@ interface Soal {
     isi_soal: string;
 }
 
+export const dynamic = "force-dynamic";
+
 export default function TambahSoalPage() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()

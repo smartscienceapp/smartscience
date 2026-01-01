@@ -67,6 +67,8 @@ interface DecodedToken {
     id_user?: number;
 }
 
+export const dynamic = "force-dynamic";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 const TOBStatus = ({ id_tob, id_user }: { id_tob: number; id_user: number | undefined }) => {

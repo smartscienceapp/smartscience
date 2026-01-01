@@ -66,6 +66,8 @@ interface Bab {
     nama_bab: string,
 }
 
+export const dynamic = "force-dynamic";
+
 export default function ListBabPage() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()

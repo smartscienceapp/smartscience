@@ -31,6 +31,8 @@ interface StudentAnswer {
     is_correct: boolean;
 }
 
+export const dynamic = "force-dynamic";
+
 export default function PreviewHasilTobPage() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()

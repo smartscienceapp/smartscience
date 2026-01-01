@@ -61,6 +61,8 @@ interface MataPelajaran {
     nama_mapel: string;
 }
 
+export const dynamic = "force-dynamic";
+
 export default function ListMataPelajaranPage() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
