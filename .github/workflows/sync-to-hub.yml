@@ -17,15 +17,33 @@ jobs:
         with:
           python-version: '3.10'
           
-      - name: Install Hugging Face CLI
+      - name: Install Hugging Face Hub
         run: pip install -U huggingface_hub
 
-      - name: Login & Upload to Space
+      - name: Upload to Space using Python
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # PERBAIKAN: Menggunakan 'python -m ...' agar perintah pasti ditemukan
-          # PENTING: Pastikan 'smartscience/smartscience_backend' di bawah ini 
-          # SESUAI dengan URL Space Anda di browser (Username/NamaSpace)
+          # Kita jalankan script Python kecil untuk upload langsung
+          # Anti error 'command not found'
           
-          python -m huggingface_hub.cli upload smartscience/smartscience_backend ./backend . --repo-type space --token $HF_TOKEN
+          python -c "
+          from huggingface_hub import HfApi
+          import os
+
+          api = HfApi(token=os.environ['HF_TOKEN'])
+          
+          print('Mulai upload...')
+          
+          # GANTI BAGIAN INI: 'username/nama_space'
+          # Pastikan username HF dan nama Space Anda benar!
+          repo_id = 'smartscience/smartscience_backend'
+          
+          api.upload_folder(
+              folder_path='./backend',
+              path_in_repo='.',
+              repo_id=repo_id,
+              repo_type='space'
+          )
+          print('Upload Sukses!')
+          "
