@@ -16,11 +16,11 @@ jobs:
           lfs: true
 
       - name: Push to Hub
-        # PERBAIKAN: Hapus kata 'uses' yang ganda
-        uses: nateraw/huggingface-sync-action@v0.0.6
+        # PERBAIKAN 1: Hapus 'uses' yang ganda
+        # PERBAIKAN 2: Ganti versi ke @main agar pasti ketemu
+        uses: nateraw/huggingface-sync-action@main
         with:
-          # Pastikan 'smartscience' adalah USERNAME Hugging Face Anda
-          # dan 'smartscience_backend' adalah nama Space yang sudah dibuat.
-          target_repo: 'smartscience/smartscience_backend'
+          # Pastikan username dan nama space ini benar
+          target_repo: 'smartscienceapp/smartscience'
           subdirectory: 'backend'
           token: ${{ secrets.HF_TOKEN }}
