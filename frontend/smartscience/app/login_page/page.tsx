@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { AlertCircle } from "lucide-react"; // Pastikan install lucide-react jika belum
+import { AlertCircle, Loader2 } from "lucide-react"; // Pastikan install lucide-react jika belum
 
 interface DecodedToken {
     role: string;
@@ -43,13 +43,13 @@ export default function LoginPage() {
                 router.push("/dashboard");
             }
             router.refresh();
+            // Jangan set isLoading(false) di sini agar loading tetap tampil saat redirect
         } catch (err: any) {
             // Logika error handling
             console.error("Login Error:", err);
             const errorMessage = err.response?.data?.detail || err.response?.data?.message || "Username atau password salah.";
             setError(errorMessage);
-        } finally {
-            setIsLoading(false); // Stop loading apapun hasilnya
+            setIsLoading(false); // Stop loading hanya jika error
         }
     }; 
 
@@ -110,7 +110,14 @@ export default function LoginPage() {
                             className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                             disabled={isLoading}
                         >
-                            {isLoading ? "Memproses..." : "Masuk"}
+                            {isLoading ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Memproses...
+                                </>
+                            ) : (
+                                "Masuk"
+                            )}
                         </Button>
                     </form>
                 </CardContent>
