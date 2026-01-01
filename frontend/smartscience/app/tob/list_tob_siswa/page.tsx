@@ -41,6 +41,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import { decode } from "punycode";
 // --- Interfaces ---
 interface MataPelajaran {
     id_mapel: number;
@@ -197,7 +198,7 @@ export function ListTOBContent() {
                     setSelectedKelasId(decoded.id_kelas.toString()) 
                     const fetchMapel = async () => {
                         try {
-                            const payload = { id_kelas: selectedKelasId}
+                            const payload = { id_kelas: decoded.id_kelas }
                             const response = await axios.post(`${API_URL}/api/v1/mapel/list_mapel`, payload)
                             if (response.data && response.data.mapel) {
                                 setListMapel(response.data.mapel)
