@@ -194,12 +194,10 @@ export function ListTOBContent() {
                 setCurrentKelas(decoded.id_kelas)
                 setCurrentUserId(decoded.id_user)  
                 if (decoded.id_kelas) {
-                    setSelectedKelasId(decoded.id_kelas.toString())
-
-                    // Fetch Mapel otomatis berdasarkan kelas dari token
+                    setSelectedKelasId(decoded.id_kelas.toString()) 
                     const fetchMapel = async () => {
                         try {
-                            const payload = { id_kelas: kelasId }
+                            const payload = { id_kelas: selectedKelasId}
                             const response = await axios.post(`${API_URL}/api/v1/mapel/list_mapel`, payload)
                             if (response.data && response.data.mapel) {
                                 setListMapel(response.data.mapel)
