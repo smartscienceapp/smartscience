@@ -1,0 +1,29 @@
+name: Sync Backend to Hugging Face Hub
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**' # Hanya jalan jika ada perubahan di folder backend
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Push to Hub
+        uses: nateraw/huggingface-sync-action@v1
+        with:
+          # GANTI INI: username_huggingface/nama_space_anda
+          # Contoh: ideap-project/smartscience-api
+          target_repo: 'smartscience/smartscience_backend' 
+          
+          # PENTING: Ini agar hanya folder backend yang di-upload
+          subdirectory: 'backend'
+          
+          # Token yang kita simpan di GitHub Secrets tadi
+          token: ${{ secrets.HF_TOKEN }}
