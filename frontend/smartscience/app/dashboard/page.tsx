@@ -41,7 +41,7 @@ export default function DashboardPage() {
                     // Fetch Data Parallel
                     try {
                         const [resTotal, resLastUser] = await Promise.all([
-                            axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/total_siswa`),
+                            axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/total_user`),
                             axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/last_user_create`)
                         ]);
                         
