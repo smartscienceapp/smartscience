@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'backend/**' # Hanya jalan jika ada perubahan di folder backend
+      - 'backend/**' 
 
 jobs:
   sync-to-hub:
@@ -23,7 +23,9 @@ jobs:
       - name: Login & Upload to Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        # GANTI 'USERNAME_HF/NAMA_SPACE' DI BAWAH INI DENGAN YANG BENAR
-        # Contoh: huggingface-cli upload smartscienceapp/smartscience ...
         run: |
-          huggingface-cli upload smartscience/smartscience_backend ./backend . --repo-type space --token $HF_TOKEN
+          # PERBAIKAN: Menggunakan 'python -m ...' agar perintah pasti ditemukan
+          # PENTING: Pastikan 'smartscience/smartscience_backend' di bawah ini 
+          # SESUAI dengan URL Space Anda di browser (Username/NamaSpace)
+          
+          python -m huggingface_hub.cli upload smartscience/smartscience_backend ./backend . --repo-type space --token $HF_TOKEN
