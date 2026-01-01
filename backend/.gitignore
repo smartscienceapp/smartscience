@@ -3,4 +3,5 @@ node_modules/
 __pycache__/
 venv/
 .env
-.DS_Store
+.DS_Store 
+seed.py
