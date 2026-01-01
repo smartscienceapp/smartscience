@@ -10,7 +10,8 @@ from app.api.v1.user import (
     get_kelas_detail,
     log_out,
     delete_user,
-    list_user
+    list_user,
+    total_user
 )
 
 # Buat satu router utama untuk User
@@ -27,3 +28,4 @@ user_router.include_router(get_kelas_detail.router)
 user_router.include_router(log_out.router)
 user_router.include_router(list_user.router)
 user_router.include_router(delete_user.router)
+user_router.include_router(total_user.router)
