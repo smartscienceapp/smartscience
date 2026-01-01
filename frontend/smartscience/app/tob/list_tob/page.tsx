@@ -159,15 +159,16 @@ export default function ListTOBPage() {
     }
 
     // 2. Fungsi Utama: Filter by Mapel (POST)
-    const handleFilter = async () => {
-        if (!selectedMapelId) {
+    const handleFilter = async (id?: string) => {
+        const mapelId = typeof id === "string" ? id : selectedMapelId
+        if (!mapelId) {
             alert("Silakan pilih mata pelajaran terlebih dahulu!")
             return
         }
 
         setIsLoading(true)
         try {
-            const payload = { id_mapel: parseInt(selectedMapelId), id_kelas: parseInt(selectedKelasId) }
+            const payload = { id_mapel: parseInt(mapelId), id_kelas: parseInt(selectedKelasId) }
 
             const response = await axios.post(`${API_URL}/api/v1/tob/post/list_tob`, payload)
 
@@ -197,7 +198,7 @@ export default function ListTOBPage() {
             <Sidebar />
             <div className="flex flex-1 flex-col">
                 <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-6 shadow-sm">
-                    <h1 className="text-xl font-semibold md:text-2xl">List Mata Pelajaran</h1>
+                    <h1 className="text-xl font-semibold md:text-2xl">List TOB</h1>
                     <div className="ml-auto">
                         <UserMenu />
                     </div>
@@ -211,7 +212,7 @@ export default function ListTOBPage() {
                                 <CardDescription>Pilih kelas dan mata pelajaran untuk melihat tob.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="grid gap-6 md:grid-cols-3">
+                                <div className="grid gap-6 md:grid-cols-2">
                                     <div className="space-y-2">
                                         <Label htmlFor="filter-kelas">Pilih Kelas</Label>
                                         <Select value={selectedKelasId} onValueChange={handleKelasChange}>
@@ -229,7 +230,10 @@ export default function ListTOBPage() {
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="filter-mapel">Pilih Mata Pelajaran</Label>
-                                        <Select value={selectedMapelId} onValueChange={setSelectedMapelId} disabled={!selectedKelasId}>
+                                        <Select value={selectedMapelId} onValueChange={(val) => {
+                                            setSelectedMapelId(val)
+                                            handleFilter(val)
+                                        }} disabled={!selectedKelasId}>
                                             <SelectTrigger id="filter-mapel" className="w-full">
                                                 <SelectValue placeholder="-- Pilih Mapel --" />
                                             </SelectTrigger>
@@ -241,13 +245,7 @@ export default function ListTOBPage() {
                                                 ))}
                                             </SelectContent>
                                         </Select>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <Button onClick={handleFilter} disabled={isLoading || !selectedMapelId}>
-                                            {isLoading ? <RefreshCcw className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
-                                            Cari TOB
-                                        </Button>
-                                    </div>
+                                    </div> 
                                 </div>
                             </CardContent>
                         </Card>

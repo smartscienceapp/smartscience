@@ -59,7 +59,11 @@ export default function ListSoalPage() {
                 id_tob: id
             })
             if (response.data && response.data.soaltob) {
-                setListSoal(response.data.soaltob)
+                // Filter duplicates based on id_soal
+                const uniqueSoal = response.data.soaltob.filter((soal: SoalTOB, index: number, self: SoalTOB[]) =>
+                    index === self.findIndex((t) => t.id_soal === soal.id_soal)
+                )
+                setListSoal(uniqueSoal)
             } else {
                 setListSoal([])
             }
