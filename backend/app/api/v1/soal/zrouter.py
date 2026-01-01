@@ -15,3 +15,4 @@ soal_router.include_router(create_soal.router)
 soal_router.include_router(get_detail_soal.router)
 soal_router.include_router(list_soal.router)
 soal_router.include_router(delete_soal.router)
+
