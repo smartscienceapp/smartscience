@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import axios from "axios"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Sidebar } from "@/components/dashboard/sidebar"
@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/dialog"
 import Cookies from "js-cookie"
 import { jwtDecode } from "jwt-decode"
-import { Search, RefreshCcw, FilterX, Eye, FileText, Check, ChevronsUpDown } from "lucide-react"
+import { Search, RefreshCcw, Loader2, FileText, Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
     Command,
@@ -99,7 +99,7 @@ const TOBStatus = ({ id_tob, id_user }: { id_tob: number; id_user: number | unde
     )
 }
 
-export default function ListTOBPage() {
+export function ListTOBContent() {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [currentUser, setCurrentUser] = useState<string>("unknown")
@@ -416,5 +416,13 @@ export default function ListTOBPage() {
                 </main>
             </div>
         </div>
+    )
+}
+
+export default function ListTOBPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
+            <ListTOBContent />
+        </Suspense>
     )
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import axios from "axios"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Sidebar } from "@/components/dashboard/sidebar"
@@ -74,7 +74,7 @@ interface Soal {
 
 export const dynamic = "force-dynamic";
 
-export default function ListSoalPage() {
+export function ListSoalContent() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
@@ -616,5 +616,13 @@ export default function ListSoalPage() {
                 </main>
             </div >
         </div >
+    )
+}
+
+export default function ListSoalPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
+            <ListSoalContent />
+        </Suspense>
     )
 }

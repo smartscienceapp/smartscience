@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense} from "react"
 import axios from "axios"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { UserMenu } from "@/components/dashboard/user-menu"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Loader2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 // --- Interfaces ---
@@ -26,7 +26,7 @@ interface SoalPreview {
 
 export const dynamic = "force-dynamic";
 
-export default function PreviewTobPage() {
+export function PreviewTobContent() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -150,5 +150,13 @@ export default function PreviewTobPage() {
                 </main>
             </div>
         </div>
+    )
+}
+
+export default function PreviewTobPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
+            <PreviewTobContent />
+        </Suspense>
     )
 }

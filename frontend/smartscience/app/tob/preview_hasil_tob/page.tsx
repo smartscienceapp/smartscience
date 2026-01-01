@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import axios from "axios"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Sidebar } from "@/components/dashboard/sidebar"
@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
-import { CheckCircle2, XCircle } from "lucide-react"
+import { CheckCircle2, XCircle, Loader2 } from "lucide-react"
 
 // --- Interfaces ---
 interface Option {
@@ -33,7 +33,7 @@ interface StudentAnswer {
 
 export const dynamic = "force-dynamic";
 
-export default function PreviewHasilTobPage() {
+export function PreviewHasilTobContent() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -334,5 +334,13 @@ export default function PreviewHasilTobPage() {
                 </main>
             </div>
         </div>
+    )
+}
+
+export default function PreviewHasilTobPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
+            <PreviewHasilTobContent />
+        </Suspense>
     )
 }

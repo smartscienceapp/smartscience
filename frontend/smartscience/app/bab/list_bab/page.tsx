@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import axios from "axios"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Sidebar } from "@/components/dashboard/sidebar"
@@ -68,7 +68,7 @@ interface Bab {
 
 export const dynamic = "force-dynamic";
 
-export default function ListBabPage() {
+export function ListBabContent() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
@@ -164,7 +164,7 @@ export default function ListBabPage() {
     const handleKelasChange = async (value: string) => {
         router.push(`/bab/list_bab?id_kelas=${value}`)
         const nama_kelas = kelasList.find((k) => k.id_kelas.toString() === value)?.nama_kelas || ""
-        setFormData((prev) => ({ ...prev, id_kelas: value, nama_kelas: nama_kelas}))
+        setFormData((prev) => ({ ...prev, id_kelas: value, nama_kelas: nama_kelas }))
         setMataPelajaranList([])
         setBabList([])
         setIsMapelLoading(true)
@@ -503,5 +503,13 @@ export default function ListBabPage() {
                 </main>
             </div>
         </div>
+    )
+}
+
+export default function ListBabPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
+            <ListBabContent />
+        </Suspense>
     )
 }

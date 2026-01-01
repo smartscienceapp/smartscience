@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import axios from "axios"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Sidebar } from "@/components/dashboard/sidebar"
@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label"
 import Cookies from "js-cookie"
 import { jwtDecode } from "jwt-decode" 
 import { cn } from "@/lib/utils"
+import {Loader2} from "lucide-react"
 
 // --- Interfaces ---
 interface Option {
@@ -36,7 +37,7 @@ interface DecodedToken {
 
 export const dynamic = "force-dynamic";
 
-export default function KerjakanSoalPage() {
+export function KerjakanSoalContent() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -360,5 +361,13 @@ export default function KerjakanSoalPage() {
                 </main>
             </div>
         </div>
+    )
+}
+
+export default function KerjakanSoalPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
+            <KerjakanSoalContent />
+        </Suspense>
     )
 }

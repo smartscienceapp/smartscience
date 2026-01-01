@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import axios from "axios"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams} from "next/navigation"
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { UserMenu } from "@/components/dashboard/user-menu"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -63,7 +63,7 @@ interface MataPelajaran {
 
 export const dynamic = "force-dynamic";
 
-export default function ListMataPelajaranPage() {
+export function ListMataPelajaranContent() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
@@ -401,5 +401,13 @@ export default function ListMataPelajaranPage() {
                 </main>
             </div>
         </div>
+    )
+}
+
+export default function ListMataPelajaranPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
+            <ListMataPelajaranContent />
+        </Suspense>
     )
 }

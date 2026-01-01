@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, ChangeEvent } from "react"
+import { useEffect, useState, ChangeEvent, Suspense} from "react"
 import axios from "axios"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Sidebar } from "@/components/dashboard/sidebar"
@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, Plus, Trash2, Save } from "lucide-react"
+import { ArrowLeft, Plus, Trash2, Save, Loader2} from "lucide-react"
 import { createClient } from "@supabase/supabase-js"
 
 // --- Interfaces ---
@@ -27,7 +27,7 @@ const supabase = createClient(
 
 export const dynamic = "force-dynamic";
 
-export default function EditSoalPage() {
+export function EditSoalContent() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -365,5 +365,13 @@ export default function EditSoalPage() {
                 </main>
             </div>
         </div>
+    )
+}
+
+export default function EditSoalPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
+            <EditSoalContent />
+        </Suspense>
     )
 }

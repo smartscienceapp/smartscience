@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense} from "react"
 import axios from "axios"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Sidebar } from "@/components/dashboard/sidebar"
@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/table"
 import Cookies from "js-cookie"
 import { jwtDecode } from "jwt-decode"
-import { Search, RefreshCcw, Plus } from "lucide-react"
+import { Search, RefreshCcw, Plus, Loader2} from "lucide-react"
 
 // --- Interfaces ---
 interface MataPelajaran {
@@ -64,7 +64,7 @@ interface Soal {
 
 export const dynamic = "force-dynamic";
 
-export default function TambahSoalPage() {
+export function TambahSoalContent() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -369,5 +369,13 @@ export default function TambahSoalPage() {
                 </main>
             </div >
         </div >
+    )
+}
+
+export default function TambahSoalPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
+            <TambahSoalContent />
+        </Suspense>
     )
 }
