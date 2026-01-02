@@ -9,16 +9,13 @@ router = APIRouter()
 
 # Ubah ke @router.post
 @router.post("/leaderboard_tob")
-def get_leaderboard(
-    user: GetLeaderboard,  # Pydantic model akan otomatis dibaca dari JSON Body
-    db: Session = Depends(get_db)
-):
-    results = db.query(HasilJawabanSiswa, User.username)\
-        .join(User, HasilJawabanSiswa.id_user == User.id_user)\
-        .filter(HasilJawabanSiswa.id_tob == user.id_tob)\
-        .order_by(desc(HasilJawabanSiswa.nilai))\
+def get_leaderboard(user: GetLeaderboard,db: Session = Depends(get_db)):
+    results = (db.query(HasilJawabanSiswa, User.username)
+        .join(User, HasilJawabanSiswa.id_user == User.id_user)
+        .filter(HasilJawabanSiswa.id_tob == user.id_tob)
+        .order_by(desc(HasilJawabanSiswa.nilai))
         .limit(10)\
-        .all()
+        .all())
     
     return [
         {"rank": i+1, "nama": r.username, "nilai": r.nilai} 
