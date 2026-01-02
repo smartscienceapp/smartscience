@@ -45,7 +45,7 @@ export default function DashboardPage() {
                             axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/last_user_create`)
                         ]);
                         
-                        setTotalSiswa(resTotal.data.total_siswa);
+                        setTotalSiswa(resTotal.data.total_user);
                         setLastUserCreatedAt(resLastUser.data.created_at);
                     } catch (error) {
                         console.error("Gagal mengambil data dashboard:", error);
