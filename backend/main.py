@@ -9,6 +9,7 @@ from app.api.v1.mata_pelajaran.zrouter_mata_pelajaran import mata_pelajaran_rout
 from app.api.v1.soal.zrouter_soal import soal_router
 from app.api.v1.tob.zrouter_tob import tob_router
 from app.api.v1.bab.zrouter_bab import bab_router
+from backend.app.api.v2.leaderboard.zrouter_leaderboard import leaderboard_router
 
 
 
@@ -60,6 +61,12 @@ app.include_router(
     tob_router,
     prefix="/api/v1/tob",
     tags=["TOB"]
+)
+
+app.include_router(
+    leaderboard_router,
+    prefix="/api/v2/leaderboard",
+    tags=["Leaderboard"]
 )
 
 # Health Check sederhana
