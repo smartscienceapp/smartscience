@@ -39,7 +39,7 @@ export function PreviewHasilTobContent() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const searchParams = useSearchParams()
-    
+
     const id_tob = searchParams.get("id_tob")
     const id_user = searchParams.get("id_user")
     const id_mapel = searchParams.get("id_mapel")
@@ -92,7 +92,7 @@ export function PreviewHasilTobContent() {
             let answersMap: Record<number, StudentAnswer> = {}
             if (answerRes.data) {
                 setScore(answerRes.data.nilai || 0)
-                
+
                 let rawAnswers = answerRes.data.jawaban_siswa
                 if (typeof rawAnswers === 'string') {
                     try {
@@ -102,7 +102,7 @@ export function PreviewHasilTobContent() {
                         rawAnswers = []
                     }
                 }
-                
+
                 if (Array.isArray(rawAnswers)) {
                     rawAnswers.forEach((ans: StudentAnswer) => {
                         answersMap[ans.id_soal] = ans
@@ -123,7 +123,7 @@ export function PreviewHasilTobContent() {
             setCurrentQuestionIndex(prev => prev + 1)
         }
     }
-    
+
     const prevQuestion = () => {
         if (currentQuestionIndex > 0) {
             setCurrentQuestionIndex(prev => prev - 1)
@@ -179,42 +179,47 @@ export function PreviewHasilTobContent() {
                                 </CardHeader>
                                 <CardContent className="flex-1 space-y-6 p-6 overflow-y-auto">
                                     <div className="text-lg font-medium leading-relaxed"><Latex>{currentSoal.isi_soal}</Latex></div>
-                                    
+
                                     {currentSoal.image_soal && (
                                         <div className="border rounded-md p-2 w-fit bg-muted/10">
-                                            <img 
-                                                src={currentSoal.image_soal} 
-                                                alt={`Gambar soal ${currentQuestionIndex + 1}`} 
+                                            <img
+                                                src={currentSoal.image_soal}
+                                                alt={`Gambar soal ${currentQuestionIndex + 1}`}
                                                 className="max-h-80 object-contain"
                                             />
                                         </div>
                                     )}
-                                    
+
                                     <div className="pt-4 space-y-3">
                                         {currentSoal.option.map((opt, idx) => {
-                                            const isSelected = currentAnswer?.jawaban === opt.text
-                                            const isCorrect = opt.isCorrect
-                                            
+                                            // PERBAIKAN LOGIKA DISINI:
+                                            // Kita generate huruf berdasarkan index (0->A, 1->B) karena preview menampilkan urutan asli DB
+                                            const optionLetter = String.fromCharCode(65 + idx);
+
+                                            // Bandingkan 'Jawaban Siswa (Huruf)' dengan 'Huruf Opsi Saat Ini'
+                                            const isSelected = currentAnswer?.jawaban === optionLetter;
+                                            const isCorrect = opt.isCorrect;
+
                                             let containerClass = "border-border"
                                             let indicator = null
 
                                             if (isSelected && isCorrect) {
-                                                // Jawaban siswa benar
+                                                // ... (style benar)
                                                 containerClass = "border-green-500 bg-green-50 ring-1 ring-green-500"
                                                 indicator = <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
                                             } else if (isSelected && !isCorrect) {
-                                                // Jawaban siswa salah
+                                                // ... (style salah)
                                                 containerClass = "border-red-500 bg-red-50 ring-1 ring-red-500"
                                                 indicator = <XCircle className="w-5 h-5 text-red-600 shrink-0" />
                                             } else if (!isSelected && isCorrect) {
-                                                // Kunci jawaban yang benar (jika siswa salah pilih)
+                                                // ... (style kunci jawaban)
                                                 containerClass = "border-green-500 bg-green-50/50 border-dashed"
                                                 indicator = <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0 opacity-50" />
                                             }
 
                                             return (
-                                                <div 
-                                                    key={idx} 
+                                                <div
+                                                    key={idx}
                                                     className={cn(
                                                         "flex items-start space-x-3 border p-4 rounded-lg transition-colors",
                                                         containerClass
@@ -224,8 +229,11 @@ export function PreviewHasilTobContent() {
                                                         {indicator || <div className="w-5 h-5 rounded-full border border-muted-foreground/30" />}
                                                     </div>
                                                     <div className="flex flex-col gap-2 flex-1">
-                                                        <Label className="text-base font-normal cursor-default">
-                                                            <Latex>{opt.text}</Latex>
+                                                        {/* Tampilkan Label Huruf (A, B, C) agar konsisten */}
+                                                        <Label className="text-base font-normal cursor-default flex gap-2">
+                                                            <span className="font-semibold">{optionLetter}.</span>
+                                                            <span><Latex>{opt.text}</Latex></span>
+
                                                             {!isSelected && isCorrect && (
                                                                 <span className="ml-2 text-xs text-green-600 font-medium">(Jawaban Benar)</span>
                                                             )}
@@ -234,9 +242,9 @@ export function PreviewHasilTobContent() {
                                                             )}
                                                         </Label>
                                                         {opt.image && (
-                                                            <img 
-                                                                src={opt.image} 
-                                                                alt={`Option ${idx + 1}`} 
+                                                            <img
+                                                                src={opt.image}
+                                                                alt={`Option ${idx + 1}`}
                                                                 className="h-24 w-auto object-contain border rounded-md bg-white self-start"
                                                             />
                                                         )}
@@ -247,17 +255,17 @@ export function PreviewHasilTobContent() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="flex justify-between border-t p-6 bg-muted/20">
-                                    <Button 
-                                        variant="outline" 
-                                        onClick={prevQuestion} 
+                                    <Button
+                                        variant="outline"
+                                        onClick={prevQuestion}
                                         disabled={currentQuestionIndex === 0}
                                         className="w-32"
                                     >
                                         Sebelumnya
                                     </Button>
-                                    
-                                    <Button 
-                                        onClick={nextQuestion} 
+
+                                    <Button
+                                        onClick={nextQuestion}
                                         disabled={currentQuestionIndex === listSoal.length - 1}
                                         className="w-32"
                                     >
@@ -278,27 +286,27 @@ export function PreviewHasilTobContent() {
                                 {score}
                             </div>
                         </div>
-                        
+
                         <div className="p-4 border-b">
                             <h3 className="font-semibold text-lg">Navigasi Soal</h3>
                             <p className="text-sm text-muted-foreground">Review jawaban anda</p>
                         </div>
-                        
+
                         <div className="flex-1 p-4 overflow-y-auto">
                             <div className="grid grid-cols-5 gap-2">
                                 {listSoal.map((soal, idx) => {
                                     const ans = studentAnswers[soal.id_soal]
                                     const isCorrect = ans?.is_correct
                                     const isCurrent = currentQuestionIndex === idx
-                                    
+
                                     return (
                                         <button
                                             key={idx}
                                             onClick={() => jumpToQuestion(idx)}
                                             className={cn(
                                                 "aspect-square rounded-md flex items-center justify-center text-sm font-medium transition-all border",
-                                                isCurrent 
-                                                    ? "ring-2 ring-primary border-primary" 
+                                                isCurrent
+                                                    ? "ring-2 ring-primary border-primary"
                                                     : "",
                                                 isCorrect
                                                     ? "bg-green-500 text-white border-green-600 hover:bg-green-600"
@@ -323,8 +331,8 @@ export function PreviewHasilTobContent() {
                                     <span>Salah</span>
                                 </div>
                             </div>
-                            
-                            <Button 
+
+                            <Button
                                 onClick={handleBack}
                                 className="w-full"
                                 variant="secondary"

@@ -358,28 +358,45 @@ export function KerjakanSoalContent() {
                                             onValueChange={handleAnswer}
                                         >
                                             {currentSoal.shuffledOptions?.map((opt, visualIdx) => {
-                                                // Kita butuh dua jenis "Huruf":
-                                                // 1. visualLetter: Huruf yang dilihat siswa di layar (A, B, C urut dari atas)
-                                                // 2. originalLetter: Huruf kunci jawaban yang dikirim ke backend
-
-                                                const visualLetter = String.fromCharCode(65 + visualIdx); // A, B, C (sesuai posisi layar)
-                                                const originalLetter = String.fromCharCode(65 + opt.originalIndex); // Huruf asli sesuai DB
+                                                const visualLetter = String.fromCharCode(65 + visualIdx);
+                                                const originalLetter = String.fromCharCode(65 + opt.originalIndex);
 
                                                 return (
                                                     <div
                                                         key={visualIdx}
-                                                        // Saat diklik, kita set jawaban ke 'originalLetter'
                                                         onClick={() => handleAnswer(originalLetter)}
-                                                        // Styling: Cek apakah jawaban user (originalLetter) sama dengan item ini
                                                         className={cn(
-                                                            "...",
-                                                            answers[currentSoal.id_soal] === originalLetter ? "border-primary bg-accent" : ""
+                                                            // UBAH DISINI: flex-row, items-start (agar sejajar atas jika teks panjang), p-4
+                                                            "flex flex-row items-start space-x-3 border p-4 rounded-lg transition-colors cursor-pointer hover:bg-accent",
+                                                            answers[currentSoal.id_soal] === originalLetter ? "border-primary bg-accent" : "border-border"
                                                         )}
                                                     >
-                                                        <RadioGroupItem value={originalLetter} id={`opt-${visualIdx}`} />
+                                                        {/* Radio Button (beri mt-1 agar sejajar dengan baris pertama teks) */}
+                                                        <RadioGroupItem value={originalLetter} id={`opt-${visualIdx}`} className="mt-1 shrink-0" />
 
-                                                        {/* Tampilkan Visual Letter (A, B, C) ke siswa agar tidak bingung */}
-                                                        <Label>{visualLetter}. <Latex>{opt.text}</Latex></Label>
+                                                        <div className="flex-1">
+                                                            <Label
+                                                                htmlFor={`opt-${visualIdx}`}
+                                                                className="cursor-pointer text-base font-normal flex flex-row items-start gap-2"
+                                                            >
+                                                                {/* Huruf A. / B. sejajar dengan teks */}
+                                                                <span className="font-semibold min-w-[1.5rem]">{visualLetter}.</span>
+
+                                                                {/* Konten Teks/Latex */}
+                                                                <div className="flex-1">
+                                                                    <Latex>{opt.text}</Latex>
+                                                                </div>
+                                                            </Label>
+
+                                                            {/* Gambar (jika ada) tetap dibawah teks agar rapi */}
+                                                            {opt.image && (
+                                                                <img
+                                                                    src={opt.image}
+                                                                    alt={`Option ${visualLetter}`}
+                                                                    className="mt-2 h-32 w-auto object-contain border rounded-md bg-white"
+                                                                />
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 )
                                             })}
