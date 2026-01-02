@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function proxy(request: NextRequest) {
+// GANTI NAMA DI SINI: dari 'proxy' menjadi 'middleware'
+export function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
   const { pathname } = request.nextUrl;
 
   const isDashboardPage = pathname.startsWith("/dashboard");
   const isLoginPage = pathname === "/login_page";
-  const isRootPage = pathname === "/"; // 
+  const isRootPage = pathname === "/"; 
+
   if (isRootPage) {
     if (token) {
       const url = request.nextUrl.clone();
