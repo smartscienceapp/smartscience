@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
 from typing import List
 
 # Import semua model yang dibutuhkan untuk Join
 from app.database.session import get_db
-from models.models import MataPelajaran, MapelKelas, TOB, Kelas
+from models.models import MataPelajaran, MapelKelas, TOB, Kelas, HasilJawabanSiswa
 from schemas.v1.schemas import TOBFind
 
 router = APIRouter() 
@@ -19,11 +20,16 @@ def list_tob(user: TOBFind, db: Session = Depends(get_db)):
             TOB.id_tob,
             TOB.nama_tob,
             MataPelajaran.nama_mapel,
-            Kelas.nama_kelas
+            Kelas.nama_kelas,
+            HasilJawabanSiswa.id_hasil
         )
         .join(MataPelajaran, TOB.id_mapel == MataPelajaran.id_mapel)
         .join(MapelKelas, MataPelajaran.id_mapel == MapelKelas.id_mapel) # Jembatan
         .join(Kelas, MapelKelas.id_kelas == Kelas.id_kelas)
+        .outerjoin(HasilJawabanSiswa, and_(
+            HasilJawabanSiswa.id_tob == TOB.id_tob,
+            HasilJawabanSiswa.id_user == user.id_user
+        ))
         .filter(MataPelajaran.id_mapel == user.id_mapel)
         .filter(Kelas.id_kelas == user.id_kelas)
         .order_by(TOB.id_tob.desc())
@@ -38,47 +44,10 @@ def list_tob(user: TOBFind, db: Session = Depends(get_db)):
             "id_tob": row.id_tob, 
             "nama_tob": row.nama_tob,
             "nama_mapel": row.nama_mapel, 
-            "nama_kelas": row.nama_kelas
+            "nama_kelas": row.nama_kelas,
+            "status": "Sudah Mengerjakan" if row.id_hasil else "Belum Mengerjakan"
         }
         for row in results 
     ]
     
-    return {"tob": tob_list}
-
-# -------------------------------------------------------
-# ENDPOINT 2: GET (Get All)
-# -------------------------------------------------------
-@router.get("/get/list_tob", response_model=dict)
-def get_list_tob(db: Session = Depends(get_db)):
-    # Logic sama: Perlu join sampai ke Kelas untuk dapat nama_kelas
-    results = (
-        db.query(
-            TOB.id_tob,
-            TOB.nama_tob,
-            MataPelajaran.nama_mapel,
-            Kelas.nama_kelas
-        )
-        .join(MataPelajaran, TOB.id_mapel == MataPelajaran.id_mapel)
-        .join(MapelKelas, MataPelajaran.id_mapel == MapelKelas.id_mapel)
-        .join(Kelas, MapelKelas.id_kelas == Kelas.id_kelas)
-        .order_by(TOB.id_tob.desc())
-        .limit(10)
-        .all()
-    )
-    
-    if not results:
-        return {"message": "No subjects found"}
-    
-    tob_list = [
-        {
-            "id_tob": row.id_tob, 
-            "nama_tob": row.nama_tob,
-            "nama_mapel": row.nama_mapel,
-            "nama_kelas": row.nama_kelas
-        }
-        for row in results
-    ]
-    
-    return {"tob": tob_list}
-
-
+    return {"tob": tob_list} 

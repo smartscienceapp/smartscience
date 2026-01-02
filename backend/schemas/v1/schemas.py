@@ -98,6 +98,7 @@ class MapelKelasCreate(BaseModel):
 class TOBFind(BaseModel):
     id_mapel: int 
     id_kelas : int
+    id_user: int | None = None
     
 class SoalFindByTOB(BaseModel):
     id_tob: int

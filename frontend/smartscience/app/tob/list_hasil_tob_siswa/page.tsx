@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react"
+import React, { useEffect, useState, Suspense } from "react"
 import axios from "axios"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Sidebar } from "@/components/dashboard/sidebar"
@@ -52,6 +52,7 @@ interface TOB {
     nama_tob: string;
     nama_kelas?: string;
     nama_mapel?: string;
+    status?: string; // Tambahkan field status dari backend
 }
 
 interface KelasItem {
@@ -70,34 +71,6 @@ interface DecodedToken {
 export const dynamic = "force-dynamic";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
-
-const TOBStatus = ({ id_tob, id_user }: { id_tob: number; id_user: number | undefined }) => {
-    const [status, setStatus] = useState<string>("...")
-
-    useEffect(() => {
-        if (!id_user) return
-
-        const fetchStatus = async () => {
-            try {
-                const response = await axios.post(`${API_URL}/api/v1/tob/status_pengerjaan`, {
-                    id_user,
-                    id_tob
-                })
-                setStatus(response.data.message)
-            } catch (error) {
-                console.error("Error fetching status:", error)
-                setStatus("Error")
-            }
-        }
-        fetchStatus()
-    }, [id_tob, id_user])
-
-    return (
-        <span className={`text-xs font-medium px-2 py-1 rounded ${status === "Sudah Mengerjakan" ? "bg-green-100 text-green-800" : status === "Belum Mengerjakan" ? "bg-yellow-100 text-yellow-800" : "text-muted-foreground"}`}>
-            {status}
-        </span>
-    )
-}
 
 export function ListTOBContent() {
     const router = useRouter()
@@ -161,13 +134,17 @@ export function ListTOBContent() {
     const paramMapel = searchParams.get("id_mapel") 
 
     useEffect(() => {
-        if (paramMapel && currentKelas) {
+        if (paramMapel && currentKelas && currentUserId) {
             setSelectedMapelId(paramMapel)
             // Fetch TOB otomatis jika ada param mapel
             const fetchTOB = async () => {
                 setIsLoading(true)
                 try {
-                    const payload = { id_mapel: parseInt(paramMapel), id_kelas: currentKelas }
+                    const payload = { 
+                        id_mapel: parseInt(paramMapel), 
+                        id_kelas: currentKelas,
+                        id_user: currentUserId // Kirim ID User untuk cek status sekaligus
+                    }
                     const response = await axios.post(`${API_URL}/api/v1/tob/post/list_tob`, payload)
                     if (response.data && response.data.tob) {
                         setDataTOB(response.data.tob)
@@ -198,7 +175,7 @@ export function ListTOBContent() {
             fetchTOB()
         }
 
-    }, [paramMapel, currentKelas])
+    }, [paramMapel, currentKelas, currentUserId])
 
     // 2. Fungsi Utama: Filter by Mapel (POST)
     const handleFilter = async (id?: string) => {
@@ -215,7 +192,11 @@ export function ListTOBContent() {
 
         setIsLoading(true)
         try {
-            const payload = { id_mapel: parseInt(mapelId), id_kelas: currentKelas }
+            const payload = { 
+                id_mapel: parseInt(mapelId), 
+                id_kelas: currentKelas,
+                id_user: currentUserId 
+            }
 
             const response = await axios.post(`${API_URL}/api/v1/tob/post/list_tob`, payload)
 
@@ -388,7 +369,16 @@ export function ListTOBContent() {
                                                                     <FileText className="mr-2 h-4 w-4" />
                                                                     Preview Hasil
                                                                 </Button>
-                                                                <TOBStatus id_tob={item.id_tob} id_user={currentUserId} />
+                                                                <span className={cn(
+                                                                    "text-xs font-medium px-2 py-1 rounded",
+                                                                    item.status === "Sudah Mengerjakan" 
+                                                                        ? "bg-green-100 text-green-800" 
+                                                                        : item.status === "Belum Mengerjakan" 
+                                                                            ? "bg-yellow-100 text-yellow-800" 
+                                                                            : "text-muted-foreground bg-gray-100"
+                                                                )}>
+                                                                    {item.status || "..."}
+                                                                </span>
                                                             </div>
                                                         </TableCell>
                                                     </TableRow>
