@@ -86,7 +86,6 @@ export default function CreateUserPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // KEMBALIKAN API CALL DISINI
         const [roleRes, kelasRes] = await Promise.all([
           axios.get(`${API_URL}/api/v1/users/get_role_detail`),
           axios.post(`${API_URL}/api/v1/kelas/list_kelas`),

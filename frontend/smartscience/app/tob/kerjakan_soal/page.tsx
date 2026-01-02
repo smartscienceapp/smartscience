@@ -230,17 +230,17 @@ export function KerjakanSoalContent() {
             const payload = {
                 id_user: currentUserId,
                 id_tob: tobId,
-                jawaban_siswa: JSON.stringify(Object.entries(answers).map(([id_soal_str, jawaban]) => {
-                    const id_soal = parseInt(id_soal_str);
-                    const soal = listSoal.find(s => s.id_soal === id_soal);
+                // Perbaikan: Map dari listSoal (semua soal), bukan answers (hanya yang dijawab)
+                jawaban_siswa: JSON.stringify(listSoal.map((soal) => {
+                    const jawaban = answers[soal.id_soal];
                     let is_correct = false;
-                    if (soal && Array.isArray(soal.option)) {
+                    if (jawaban && Array.isArray(soal.option)) {
                         const selected = soal.option.find(opt => opt.text === jawaban);
                         if (selected?.isCorrect) is_correct = true;
                     }
                     return {
-                        id_soal,
-                        jawaban,
+                        id_soal: soal.id_soal,
+                        jawaban: jawaban || "", // Kirim string kosong jika tidak dijawab
                         is_correct
                     };
                 })),
