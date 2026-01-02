@@ -31,21 +31,20 @@ export default function LeaderboardPage({ params }: { params: { id_tob: string }
 
             try {
                 const token = Cookies.get("token");
-                
+
                 // --- PERUBAHAN UTAMA DI SINI (POST METHOD) ---
                 const response = await axios.post(
                     `${process.env.NEXT_PUBLIC_API_URL}/api/v2/leaderboard`,
-                    { 
-                        id_tob: parseInt(idTob) // Kirim sebagai JSON Body
-                    }, 
                     {
-                        headers: { 
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "application/json"
+                        id_tob: parseInt(idTob) // Body request: harus match dengan schema GetLeaderboard
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
                         }
                     }
                 );
-                
+
                 setLeaderboard(response.data);
             } catch (error) {
                 console.error("Gagal mengambil data leaderboard:", error);

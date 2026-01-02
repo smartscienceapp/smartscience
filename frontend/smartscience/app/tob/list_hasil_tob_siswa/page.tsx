@@ -382,7 +382,7 @@ export function ListTOBContent() {
                                                                 <Button
                                                                     variant="outline"
                                                                     size="sm"
-                                                                    onClick={() => router.push(`/leaderboard?id_tob=${item.id_tob}`)}
+                                                                    onClick={() => router.push(`/leaderboard/${item.id_tob}`)}
                                                                 >
                                                                     <Trophy className="mr-2 h-4 w-4" />
                                                                     Leaderboard
