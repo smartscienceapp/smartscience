@@ -356,172 +356,170 @@ export function ListSoalContent() {
                                 <CardDescription>Pilih kelas, mata pelajaran dan bab untuk melihat soal.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="grid gap-6 md:grid-cols-3">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="kelas">Kelas <span className="text-red-500">*</span></Label>
-                                        <Popover open={openKelas} onOpenChange={setOpenKelas}>
-                                            <PopoverTrigger asChild>
-                                                <Button
-                                                    variant="outline"
-                                                    role="combobox"
-                                                    aria-expanded={openKelas}
-                                                    className="w-full justify-between"
-                                                >
-                                                    {formData.id_kelas
-                                                        ? kelasList.find((k) => k.id_kelas.toString() === formData.id_kelas)?.nama_kelas
-                                                        : "Pilih Kelas"}
-                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                                                <Command>
-                                                    <CommandInput placeholder="Cari kelas..." />
-                                                    <CommandList>
-                                                        {isKelasLoading ? (
-                                                            <div className="flex items-center justify-center py-6 text-sm text-muted-foreground">
-                                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                                Memuat data kelas...
-                                                            </div>
-                                                        ) : (
-                                                            <>
-                                                                <CommandEmpty>Kelas tidak ditemukan.</CommandEmpty>
-                                                                <CommandGroup>
-                                                                    {kelasList.map((k) => (
-                                                                        <CommandItem
-                                                                            key={k.id_kelas}
-                                                                            value={k.nama_kelas}
-                                                                            onSelect={() => {
-                                                                                handleKelasChange(k.id_kelas.toString())
-                                                                                setOpenKelas(false)
-                                                                            }}
-                                                                        >
-                                                                            <Check
-                                                                                className={cn(
-                                                                                    "mr-2 h-4 w-4",
-                                                                                    formData.id_kelas === k.id_kelas.toString() ? "opacity-100" : "opacity-0"
-                                                                                )}
-                                                                            />
-                                                                            {k.nama_kelas}
-                                                                        </CommandItem>
-                                                                    ))}
-                                                                </CommandGroup>
-                                                            </>)}
-                                                    </CommandList>
-                                                </Command>
-                                            </PopoverContent>
-                                        </Popover>
-                                    </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="kelas">Kelas <span className="text-red-500">*</span></Label>
+                                    <Popover open={openKelas} onOpenChange={setOpenKelas}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                role="combobox"
+                                                aria-expanded={openKelas}
+                                                className="w-full justify-between"
+                                            >
+                                                {formData.id_kelas
+                                                    ? kelasList.find((k) => k.id_kelas.toString() === formData.id_kelas)?.nama_kelas
+                                                    : "Pilih Kelas"}
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                                            <Command>
+                                                <CommandInput placeholder="Cari kelas..." />
+                                                <CommandList>
+                                                    {isKelasLoading ? (
+                                                        <div className="flex items-center justify-center py-6 text-sm text-muted-foreground">
+                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                            Memuat data kelas...
+                                                        </div>
+                                                    ) : (
+                                                        <>
+                                                            <CommandEmpty>Kelas tidak ditemukan.</CommandEmpty>
+                                                            <CommandGroup>
+                                                                {kelasList.map((k) => (
+                                                                    <CommandItem
+                                                                        key={k.id_kelas}
+                                                                        value={k.nama_kelas}
+                                                                        onSelect={() => {
+                                                                            handleKelasChange(k.id_kelas.toString())
+                                                                            setOpenKelas(false)
+                                                                        }}
+                                                                    >
+                                                                        <Check
+                                                                            className={cn(
+                                                                                "mr-2 h-4 w-4",
+                                                                                formData.id_kelas === k.id_kelas.toString() ? "opacity-100" : "opacity-0"
+                                                                            )}
+                                                                        />
+                                                                        {k.nama_kelas}
+                                                                    </CommandItem>
+                                                                ))}
+                                                            </CommandGroup>
+                                                        </>)}
+                                                </CommandList>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
 
-                                    <div className="space-y-2">
-                                        <Label htmlFor="mata_pelajaran">Mata Pelajaran <span className="text-red-500">*</span></Label>
-                                        <Popover open={openMapel} onOpenChange={setOpenMapel}>
-                                            <PopoverTrigger asChild>
-                                                <Button
-                                                    variant="outline"
-                                                    role="combobox"
-                                                    aria-expanded={openMapel}
-                                                    className="w-full justify-between"
-                                                    disabled={!formData.id_kelas}
-                                                >
-                                                    {formData.id_mapel
-                                                        ? mataPelajaranList.find((k) => k.id_mapel.toString() === formData.id_mapel)?.nama_mapel
-                                                        : "Pilih Mata Pelajaran"}
-                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                                                <Command>
-                                                    <CommandInput placeholder="Cari mata pelajaran..." />
-                                                    <CommandList>
-                                                        {isMapelLoading ? (
-                                                            <div className="flex items-center justify-center py-6 text-sm text-muted-foreground">
-                                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                                Memuat data mata pelajaran...
-                                                            </div>
-                                                        ) : (
-                                                            <>
-                                                                <CommandEmpty>Mata pelajaran tidak ditemukan.</CommandEmpty>
-                                                                <CommandGroup>
-                                                                    {mataPelajaranList.map((k) => (
-                                                                        <CommandItem
-                                                                            key={k.id_mapel}
-                                                                            value={k.nama_mapel}
-                                                                            onSelect={() => {
-                                                                                handleMataPelajaranChange(k.id_mapel.toString())
-                                                                                setOpenMapel(false)
-                                                                            }}
-                                                                        >
-                                                                            <Check
-                                                                                className={cn(
-                                                                                    "mr-2 h-4 w-4",
-                                                                                    formData.id_mapel === k.id_mapel.toString() ? "opacity-100" : "opacity-0"
-                                                                                )}
-                                                                            />
-                                                                            {k.nama_mapel}
-                                                                        </CommandItem>
-                                                                    ))}
-                                                                </CommandGroup>
-                                                            </>)}
-                                                    </CommandList>
-                                                </Command>
-                                            </PopoverContent>
-                                        </Popover>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="bab">Bab<span className="text-red-500">*</span></Label>
-                                        <Popover open={openBab} onOpenChange={setOpenBab}>
-                                            <PopoverTrigger asChild>
-                                                <Button
-                                                    variant="outline"
-                                                    role="combobox"
-                                                    aria-expanded={openMapel}
-                                                    className="w-full justify-between"
-                                                    disabled={!formData.id_mapel}
-                                                >
-                                                    {formData.id_bab
-                                                        ? babList.find((k) => k.id_bab.toString() === formData.id_bab)?.nama_bab
-                                                        : "Pilih Bab"}
-                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                                                <Command>
-                                                    <CommandInput placeholder="Cari bab..." />
-                                                    <CommandList>
-                                                        {isMapelLoading ? (
-                                                            <div className="flex items-center justify-center py-6 text-sm text-muted-foreground">
-                                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                                Memuat data bab
-                                                            </div>
-                                                        ) : (
-                                                            <>
-                                                                <CommandEmpty>Bab tidak ditemukan.</CommandEmpty>
-                                                                <CommandGroup>
-                                                                    {babList.map((k) => (
-                                                                        <CommandItem
-                                                                            key={k.id_bab}
-                                                                            value={k.nama_bab}
-                                                                            onSelect={() => {
-                                                                                handleBabChange(k.id_bab.toString())
-                                                                                setOpenBab(false)
-                                                                            }}
-                                                                        >
-                                                                            <Check
-                                                                                className={cn(
-                                                                                    "mr-2 h-4 w-4",
-                                                                                    formData.id_bab === k.id_bab.toString() ? "opacity-100" : "opacity-0"
-                                                                                )}
-                                                                            />
-                                                                            {k.nama_bab}
-                                                                        </CommandItem>
-                                                                    ))}
-                                                                </CommandGroup>
-                                                            </>)}
-                                                    </CommandList>
-                                                </Command>
-                                            </PopoverContent>
-                                        </Popover>
-                                    </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="mata_pelajaran">Mata Pelajaran <span className="text-red-500">*</span></Label>
+                                    <Popover open={openMapel} onOpenChange={setOpenMapel}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                role="combobox"
+                                                aria-expanded={openMapel}
+                                                className="w-full justify-between"
+                                                disabled={!formData.id_kelas}
+                                            >
+                                                {formData.id_mapel
+                                                    ? mataPelajaranList.find((k) => k.id_mapel.toString() === formData.id_mapel)?.nama_mapel
+                                                    : "Pilih Mata Pelajaran"}
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                                            <Command>
+                                                <CommandInput placeholder="Cari mata pelajaran..." />
+                                                <CommandList>
+                                                    {isMapelLoading ? (
+                                                        <div className="flex items-center justify-center py-6 text-sm text-muted-foreground">
+                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                            Memuat data mata pelajaran...
+                                                        </div>
+                                                    ) : (
+                                                        <>
+                                                            <CommandEmpty>Mata pelajaran tidak ditemukan.</CommandEmpty>
+                                                            <CommandGroup>
+                                                                {mataPelajaranList.map((k) => (
+                                                                    <CommandItem
+                                                                        key={k.id_mapel}
+                                                                        value={k.nama_mapel}
+                                                                        onSelect={() => {
+                                                                            handleMataPelajaranChange(k.id_mapel.toString())
+                                                                            setOpenMapel(false)
+                                                                        }}
+                                                                    >
+                                                                        <Check
+                                                                            className={cn(
+                                                                                "mr-2 h-4 w-4",
+                                                                                formData.id_mapel === k.id_mapel.toString() ? "opacity-100" : "opacity-0"
+                                                                            )}
+                                                                        />
+                                                                        {k.nama_mapel}
+                                                                    </CommandItem>
+                                                                ))}
+                                                            </CommandGroup>
+                                                        </>)}
+                                                </CommandList>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="bab">Bab<span className="text-red-500">*</span></Label>
+                                    <Popover open={openBab} onOpenChange={setOpenBab}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                role="combobox"
+                                                aria-expanded={openMapel}
+                                                className="w-full justify-between"
+                                                disabled={!formData.id_mapel}
+                                            >
+                                                {formData.id_bab
+                                                    ? babList.find((k) => k.id_bab.toString() === formData.id_bab)?.nama_bab
+                                                    : "Pilih Bab"}
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                                            <Command>
+                                                <CommandInput placeholder="Cari bab..." />
+                                                <CommandList>
+                                                    {isMapelLoading ? (
+                                                        <div className="flex items-center justify-center py-6 text-sm text-muted-foreground">
+                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                            Memuat data bab
+                                                        </div>
+                                                    ) : (
+                                                        <>
+                                                            <CommandEmpty>Bab tidak ditemukan.</CommandEmpty>
+                                                            <CommandGroup>
+                                                                {babList.map((k) => (
+                                                                    <CommandItem
+                                                                        key={k.id_bab}
+                                                                        value={k.nama_bab}
+                                                                        onSelect={() => {
+                                                                            handleBabChange(k.id_bab.toString())
+                                                                            setOpenBab(false)
+                                                                        }}
+                                                                    >
+                                                                        <Check
+                                                                            className={cn(
+                                                                                "mr-2 h-4 w-4",
+                                                                                formData.id_bab === k.id_bab.toString() ? "opacity-100" : "opacity-0"
+                                                                            )}
+                                                                        />
+                                                                        {k.nama_bab}
+                                                                    </CommandItem>
+                                                                ))}
+                                                            </CommandGroup>
+                                                        </>)}
+                                                </CommandList>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
                                 </div>
                                 <div className="mt-4">
                                     <Label htmlFor="search-soal">Cari Soal</Label>
@@ -545,11 +543,8 @@ export function ListSoalContent() {
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
-                                                <TableHead>ID Soal</TableHead>
-                                                <TableHead>Kelas</TableHead>
-                                                <TableHead>Mata Pelajaran</TableHead>
-                                                <TableHead>Bab</TableHead>
-                                                <TableHead>Nama Soal</TableHead>
+                                                <TableHead>ID Soal</TableHead>  
+                                                <TableHead>Isi Soal</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -566,19 +561,16 @@ export function ListSoalContent() {
                                                 soalList
                                                     .filter((item) => item.nama_soal.toLowerCase().includes(searchQuery.toLowerCase()))
                                                     .map((item) => (
-                                                    <TableRow key={item.id_soal}>
-                                                        <TableCell className="font-medium">{item.id_soal}</TableCell>
-                                                        <TableCell>{formData.nama_kelas || "-"}</TableCell>
-                                                        <TableCell>{formData.nama_mapel || "-"}</TableCell>
-                                                        <TableCell>{formData.nama_bab || "-"}</TableCell>
-                                                        <TableCell>{item.nama_soal}</TableCell>
-                                                        <TableCell  className="w-[50px]">
-                                                            <Button variant="destructive" size="sm" onClick={() => handleDeleteClick(item.id_soal)}>
-                                                                <Trash2 className="h-4 w-4" />
-                                                            </Button>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))
+                                                        <TableRow key={item.id_soal}>
+                                                            <TableCell className="font-medium">{item.id_soal}</TableCell> 
+                                                            <TableCell>{item.nama_soal}</TableCell>
+                                                            <TableCell className="w-[50px]">
+                                                                <Button variant="destructive" size="sm" onClick={() => handleDeleteClick(item.id_soal)}>
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ))
                                             )}
                                         </TableBody>
                                     </Table>
