@@ -10,7 +10,7 @@ router = APIRouter()
 # Ubah ke @router.post
 @router.post("/leaderboard_tob")
 def get_leaderboard(user: GetLeaderboard,db: Session = Depends(get_db)):
-    results = (db.query(HasilJawabanSiswa, User.username)
+    results = (db.query(HasilJawabanSiswa.nilai, User.username)
         .join(User, HasilJawabanSiswa.id_user == User.id_user)
         .filter(HasilJawabanSiswa.id_tob == user.id_tob)
         .order_by(desc(HasilJawabanSiswa.nilai))
@@ -19,5 +19,5 @@ def get_leaderboard(user: GetLeaderboard,db: Session = Depends(get_db)):
     
     return [
         {"rank": i+1, "nama": r.username, "nilai": r.nilai} 
-        for i, (r, username) in enumerate(results)
+        for i, (r) in enumerate(results)
     ]
