@@ -64,6 +64,7 @@ export function KerjakanSoalContent() {
     const [currentUserId, setCurrentUserId] = useState<number>()
     const [currentUserName, setCurrentUserName] = useState<string>("unknown") 
     const [alertOpen, setAlertOpen] = useState(false)
+    const [submitConfirmOpen, setSubmitConfirmOpen] = useState(false)
     const [alertData, setAlertData] = useState({
         title: "",
         description: "",
@@ -166,7 +167,7 @@ export function KerjakanSoalContent() {
         }))
     }
 
-    const handleSubmit = async () => {
+    const handleSubmit = () => {
         if (!currentUser) {
             setAlertData({
                 title: "Gagal",
@@ -188,10 +189,14 @@ export function KerjakanSoalContent() {
             return
         }
 
-        if (!confirm("Apakah Anda yakin ingin mengumpulkan jawaban? Pastikan semua soal telah terjawab.")) return;
+        setSubmitConfirmOpen(true)
+    }
 
+    const confirmSubmit = async () => {
+        setSubmitConfirmOpen(false)
         setIsSubmitting(true)
         try {
+            const tobId = parseInt(id_tob || "0")
             // Payload structure depends on backend. Assuming a generic structure here.
             const paramMapel = searchParams.get("id_mapel")
             const payload = {
@@ -425,6 +430,20 @@ export function KerjakanSoalContent() {
                     </DialogHeader>
                     <DialogFooter>
                         <Button onClick={handleAlertClose}>OK</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={submitConfirmOpen} onOpenChange={setSubmitConfirmOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Konfirmasi Pengumpulan</DialogTitle>
+                        <DialogDescription>
+                            Apakah Anda yakin ingin mengumpulkan jawaban? Pastikan semua soal telah terjawab.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setSubmitConfirmOpen(false)}>Batal</Button>
+                        <Button onClick={confirmSubmit} className="bg-green-600 hover:bg-green-700">Ya, Kumpulkan</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

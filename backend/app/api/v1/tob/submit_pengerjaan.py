@@ -12,15 +12,11 @@ router = APIRouter()
 
 @router.post("/submit_pengerjaan")
 def submit_pengerjaan(data: SubmitPengerjaanRequest, db: Session = Depends(get_db)):   
-    try:   
-        # --- 1. Resolve ID User (Handle jika dikirim username string atau ID string) ---
-        if data.id_user.isdigit():
-            user_id = int(data.id_user)
-        else:
-            user_check = db.query(User).filter(User.username == data.id_user).first()
-            if not user_check:
-                raise HTTPException(status_code=404, detail="User not found")
-            user_id = user_check.id_user
+    try:    
+        user_check = db.query(User).filter(User.username == data.id_user).first()
+        if not user_check:
+            raise HTTPException(status_code=404, detail="User not found")
+        user_id = user_check.id_user
 
         # --- 2. Parse Jawaban (String JSON -> List Python) ---
         try:
