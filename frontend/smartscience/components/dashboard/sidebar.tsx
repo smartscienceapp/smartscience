@@ -28,6 +28,139 @@ interface DecodedToken {
   role: string;
 }
 
+// 2. Definisi Menu (Dipindahkan ke luar komponen agar tidak dire-create setiap render)
+const menuItems: MenuItem[] = [
+  {
+    title: "Overview",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+    roles: ["admin", "siswa"]
+  },
+  {
+    title: "Overview",
+    href: "/dashboard/dashboard_guru",
+    icon: LayoutDashboard,
+    roles: ["guru"]
+  },
+  {
+    title: "Users",
+    icon: Users,
+    roles: ["admin"],
+    items: [
+      {
+        title: "Create User",
+        href: "/users/create_user",
+        roles: ["admin"],
+      },
+      {
+        title: "List User",
+        href: "/users/list_user",
+        roles: ["admin"],
+      }
+    ],
+  },
+  {
+    title: "Kelas",
+    icon: Users,
+    items: [
+      {
+        title: "Buat Kelas",
+        href: "/kelas/create_kelas",
+        roles: ["guru", "admin"],
+      },
+      {
+        title: "List Kelas",
+        href: "/kelas/list_kelas",
+        roles: ["guru", "admin"],
+      },
+    ],
+  },
+  {
+    title: "Mata Pelajaran",
+    icon: BookOpen,
+    items: [
+      {
+        title: "Buat Mata Pelajaran",
+        href: "/mata_pelajaran/create_mata_pelajaran",
+        roles: ["guru"],
+      },
+      {
+        title: "List Mata Pelajaran",
+        href: "/mata_pelajaran/list_mata_pelajaran",
+        roles: ["guru"],
+      },
+      {
+        title: "Tautkan Mata Pelajaran",
+        href: "/mata_pelajaran/tautkan_mata_pelajaran",
+        roles: ["guru"],
+      }
+    ],
+  },
+  {
+    title: "Bab",
+    icon: BookOpen,
+    items: [
+      {
+        title: "Buat Bab",
+        href: "/bab/create_bab",
+        roles: ["guru"],
+      },
+      {
+        title: "List Bab",
+        href: "/bab/list_bab",
+        roles: ["guru"],
+      },
+      {
+        title: "Tautkan Bab",
+        href: "/bab/tautkan_bab",
+        roles: ["guru"],
+      }
+    ],
+  },
+  {
+    title: "Soal",
+    icon: BookOpen,
+    items: [
+      {
+        title: "Buat Soal",
+        href: "/soal/create_soal",
+        roles: ["guru"],
+      },
+      {
+        title: "List Soal",
+        href: "/soal/list_soal_bab",
+        roles: ["guru"],
+      },
+    ],
+  },
+  {
+    title: "TOB",
+    icon: BookOpen,
+    items: [
+      {
+        title: "Buat TOB",
+        href: "/tob/create_tob",
+        roles: ["guru"],
+      },
+      {
+        title: "List TOB",
+        href: "/tob/list_tob",
+        roles: ["guru"],
+      },
+      {
+        title: "List TOB Siswa",
+        href: "/tob/list_tob_siswa",
+        roles: ["siswa"],
+      },
+      {
+        title: "List Hasil TOB Siswa",
+        href: "/tob/list_hasil_tob_siswa",
+        roles: ["siswa"],
+      },
+    ]
+  },
+];
+
 export function Sidebar() {
   const pathname = usePathname();
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -45,139 +178,6 @@ export function Sidebar() {
       }
     }
   }, []);
-
-  // 2. Definisi Menu (Sesuai request kamu dengan perbaikan sintaks)
-  const menuItems: MenuItem[] = [
-    {
-      title: "Overview",
-      href: "/dashboard",
-      icon: LayoutDashboard,
-      roles: ["admin", "siswa"]
-    },
-    {
-      title: "Overview",
-      href: "/dashboard/dashboard_guru",
-      icon: LayoutDashboard,
-      roles: ["guru"]
-    },
-    {
-      title: "Users",
-      icon: Users,
-      roles: ["admin"],
-      items: [
-        {
-          title: "Create User",
-          href: "/users/create_user",
-          roles: ["admin"],
-        },
-        {
-          title: "List User",
-          href: "/users/list_user",
-          roles: ["admin"],
-        }
-      ],
-    },
-    {
-      title: "Kelas",
-      icon: Users,
-      items: [
-        {
-          title: "Buat Kelas",
-          href: "/kelas/create_kelas",
-          roles: ["guru", "admin"],
-        },
-        {
-          title: "List Kelas",
-          href: "/kelas/list_kelas",
-          roles: ["guru", "admin"],
-        },
-      ],
-    },
-    {
-      title: "Mata Pelajaran",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Buat Mata Pelajaran",
-          href: "/mata_pelajaran/create_mata_pelajaran",
-          roles: ["guru"],
-        },
-        {
-          title: "List Mata Pelajaran",
-          href: "/mata_pelajaran/list_mata_pelajaran",
-          roles: ["guru"],
-        },
-        {
-          title: "Tautkan Mata Pelajaran",
-          href: "/mata_pelajaran/tautkan_mata_pelajaran",
-          roles: ["guru"],
-        }
-      ],
-    },
-    {
-      title: "Bab",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Buat Bab",
-          href: "/bab/create_bab",
-          roles: ["guru"],
-        },
-        {
-          title: "List Bab",
-          href: "/bab/list_bab",
-          roles: ["guru"],
-        },
-        {
-          title: "Tautkan Bab",
-          href: "/bab/tautkan_bab",
-          roles: ["guru"],
-        }
-      ],
-    },
-    {
-      title: "Soal",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Buat Soal",
-          href: "/soal/create_soal",
-          roles: ["guru"],
-        },
-        {
-          title: "List Soal",
-          href: "/soal/list_soal_bab",
-          roles: ["guru"],
-        },
-      ],
-    },
-    {
-      title: "TOB",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Buat TOB",
-          href: "/tob/create_tob",
-          roles: ["guru"],
-        },
-        {
-          title: "List TOB",
-          href: "/tob/list_tob",
-          roles: ["guru"],
-        },
-        {
-          title: "List TOB Siswa",
-          href: "/tob/list_tob_siswa",
-          roles: ["siswa"],
-        },
-        {
-          title: "List Hasil TOB Siswa",
-          href: "/tob/list_hasil_tob_siswa",
-          roles: ["siswa"],
-        },
-      ]
-    },
-  ];
 
   // Buka submenu secara otomatis jika ada item aktif di dalamnya
   useEffect(() => {
