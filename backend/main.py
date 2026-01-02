@@ -3,12 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings  
 from app.database.session import engine_database
 from app.database.base import Base
-from backend.app.api.v1.user.zrouter_user import user_router
-from backend.app.api.v1.kelas.zrouter_kelas import kelas_router
-from backend.app.api.v1.mata_pelajaran.zrouter_mata_pelajaran import mata_pelajaran_router
-from backend.app.api.v1.soal.zrouter_soal import soal_router
-from backend.app.api.v1.tob.zrouter_tob import tob_router
-from backend.app.api.v1.bab.zrouter_bab import bab_router
+from app.api.v1.user.zrouter_user import user_router
+from app.api.v1.kelas.zrouter_kelas import kelas_router
+from app.api.v1.mata_pelajaran.zrouter_mata_pelajaran import mata_pelajaran_router
+from app.api.v1.soal.zrouter_soal import soal_router
+from app.api.v1.tob.zrouter_tob import tob_router
+from app.api.v1.bab.zrouter_bab import bab_router
 
 
 
