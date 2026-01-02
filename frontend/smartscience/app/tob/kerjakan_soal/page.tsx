@@ -36,6 +36,7 @@ interface SoalExam {
     isi_soal: string;
     image_soal: string | null;
     option: Option[] | string;
+    shuffledOptions?: ShuffledOption[];
 }
 
 interface DecodedToken {
@@ -44,6 +45,19 @@ interface DecodedToken {
     role: string;
     id_user?: number;
     id_kelas?: number;
+}
+
+interface ShuffledOption extends Option {
+    originalIndex: number; // Ini kunci rahasianya (0, 1, 2, ...)
+}
+
+function shuffleArray<T>(array: T[]): T[] {
+    const newArr = [...array];
+    for (let i = newArr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+    }
+    return newArr;
 }
 
 export const dynamic = "force-dynamic";
@@ -62,7 +76,7 @@ export function KerjakanSoalContent() {
     const [currentUser, setCurrentUser] = useState<string>("unknown")
     const [currentKelas, setCurrentKelas] = useState<number>()
     const [currentUserId, setCurrentUserId] = useState<number>()
-    const [currentUserName, setCurrentUserName] = useState<string>("unknown") 
+    const [currentUserName, setCurrentUserName] = useState<string>("unknown")
     const [alertOpen, setAlertOpen] = useState(false)
     const [submitConfirmOpen, setSubmitConfirmOpen] = useState(false)
     const [alertData, setAlertData] = useState({
@@ -164,15 +178,28 @@ export function KerjakanSoalContent() {
 
             if (response.data && response.data.soaltob) {
                 const mappedData = response.data.soaltob.map((item: SoalExam) => {
-                    let parsedOption = item.option
+                    let parsedOption = [];
+                    // Parsing JSON seperti biasa
                     if (typeof item.option === 'string') {
-                        try {
-                            parsedOption = JSON.parse(item.option)
-                        } catch (e) {
-                            parsedOption = []
-                        }
+                        try { parsedOption = JSON.parse(item.option) } catch (e) { parsedOption = [] }
+                    } else {
+                        parsedOption = item.option || []
                     }
-                    return { ...item, option: parsedOption }
+
+                    // --- LANGKAH PENTING: Attach Index Asli & Shuffle ---
+                    const optionsWithIndex = parsedOption.map((opt: any, idx: number) => ({
+                        ...opt,
+                        originalIndex: idx // Simpan "0" untuk A, "1" untuk B, dst.
+                    }));
+
+                    const shuffled = shuffleArray(optionsWithIndex);
+
+                    // Simpan 'option' (data mentah) DAN 'shuffledOptions' (untuk display)
+                    return {
+                        ...item,
+                        option: parsedOption, // Tetap simpan original untuk referensi jika perlu
+                        shuffledOptions: shuffled
+                    }
                 })
                 setListSoal(mappedData)
             } else {
@@ -230,22 +257,22 @@ export function KerjakanSoalContent() {
             const payload = {
                 id_user: currentUserId,
                 id_tob: tobId,
-                // Perbaikan: Map dari listSoal (semua soal), bukan answers (hanya yang dijawab)
                 jawaban_siswa: JSON.stringify(listSoal.map((soal) => {
-                    const jawaban = answers[soal.id_soal];
+                    const jawabanHuruf = answers[soal.id_soal];
                     let is_correct = false;
-                    if (jawaban && Array.isArray(soal.option)) {
-                        const selected = soal.option.find(opt => opt.text === jawaban);
-                        if (selected?.isCorrect) is_correct = true;
+                    if (jawabanHuruf && Array.isArray(soal.option)) {
+                        const index = jawabanHuruf.charCodeAt(0) - 65;
+                        if (soal.option[index]?.isCorrect) is_correct = true;
                     }
+
                     return {
                         id_soal: soal.id_soal,
-                        jawaban: jawaban || "", // Kirim string kosong jika tidak dijawab
+                        jawaban: jawabanHuruf || "",
                         is_correct
                     };
                 })),
                 created_by: currentUserName
-            } 
+            }
             await axios.post(`${API_URL}/api/v1/tob/submit_pengerjaan`, payload)
 
             setAlertData({
@@ -324,35 +351,38 @@ export function KerjakanSoalContent() {
                                     )}
 
                                     <div className="pt-4">
+                                        {/* Value yang dikontrol state adalah Huruf (A, B, C) */}
                                         <RadioGroup
+                                            // Value yang disimpan di state tetap Huruf Asli ("A", "B")
                                             value={answers[currentSoal.id_soal] || ""}
                                             onValueChange={handleAnswer}
-                                            className="space-y-3"
                                         >
-                                            {Array.isArray(currentSoal.option) && currentSoal.option.map((opt, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    className={cn(
-                                                        "flex items-start space-x-3 border p-4 rounded-lg transition-colors cursor-pointer hover:bg-accent",
-                                                        answers[currentSoal.id_soal] === opt.text ? "border-primary bg-accent" : "border-border"
-                                                    )}
-                                                    onClick={() => handleAnswer(opt.text)}
-                                                >
-                                                    <RadioGroupItem value={opt.text} id={`opt-${idx}`} className="mt-1" />
-                                                    <div className="flex flex-col gap-2 flex-1">
-                                                        <Label htmlFor={`opt-${idx}`} className="cursor-pointer text-base font-normal">
-                                                            <Latex>{opt.text}</Latex>
-                                                        </Label>
-                                                        {opt.image && (
-                                                            <img
-                                                                src={opt.image}
-                                                                alt={`Option ${idx + 1}`}
-                                                                className="h-24 w-auto object-contain border rounded-md bg-white self-start"
-                                                            />
+                                            {currentSoal.shuffledOptions?.map((opt, visualIdx) => {
+                                                // Kita butuh dua jenis "Huruf":
+                                                // 1. visualLetter: Huruf yang dilihat siswa di layar (A, B, C urut dari atas)
+                                                // 2. originalLetter: Huruf kunci jawaban yang dikirim ke backend
+
+                                                const visualLetter = String.fromCharCode(65 + visualIdx); // A, B, C (sesuai posisi layar)
+                                                const originalLetter = String.fromCharCode(65 + opt.originalIndex); // Huruf asli sesuai DB
+
+                                                return (
+                                                    <div
+                                                        key={visualIdx}
+                                                        // Saat diklik, kita set jawaban ke 'originalLetter'
+                                                        onClick={() => handleAnswer(originalLetter)}
+                                                        // Styling: Cek apakah jawaban user (originalLetter) sama dengan item ini
+                                                        className={cn(
+                                                            "...",
+                                                            answers[currentSoal.id_soal] === originalLetter ? "border-primary bg-accent" : ""
                                                         )}
+                                                    >
+                                                        <RadioGroupItem value={originalLetter} id={`opt-${visualIdx}`} />
+
+                                                        {/* Tampilkan Visual Letter (A, B, C) ke siswa agar tidak bingung */}
+                                                        <Label>{visualLetter}. <Latex>{opt.text}</Latex></Label>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                )
+                                            })}
                                         </RadioGroup>
                                     </div>
                                 </CardContent>
