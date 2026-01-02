@@ -25,7 +25,7 @@ app = FastAPI(
 # Setup CORS (Agar frontend Vue/React/Angular bisa akses)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://hilarious-chebakia-ffa7e3.netlify.app/"],
+    allow_origins=["http://localhost:3000", "https://smartscience.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
