@@ -127,6 +127,34 @@ export function KerjakanSoalContent() {
         }
     }, [id_tob])
 
+    useEffect(() => {
+        if (currentUserId && id_tob) {
+            const checkStatus = async () => {
+                try {
+                    const response = await axios.post(`${API_URL}/api/v1/tob/status_pengerjaan`, {
+                        id_user: currentUserId,
+                        id_tob: parseInt(id_tob)
+                    })
+
+                    if (response.data.message === "Sudah Mengerjakan") {
+                        setAlertData({
+                            title: "Akses Ditolak",
+                            description: "Anda sudah mengerjakan ujian ini.",
+                            onAction: () => {
+                                const paramMapel = searchParams.get("id_mapel")
+                                router.push(paramMapel ? `/tob/list_tob_siswa?id_mapel=${paramMapel}` : "/dashboard")
+                            }
+                        })
+                        setAlertOpen(true)
+                    }
+                } catch (error) {
+                    console.error("Error checking status:", error)
+                }
+            }
+            checkStatus()
+        }
+    }, [currentUserId, id_tob])
+
     const fetchQuestions = async (id: number) => {
         setIsLoading(true)
         try {
@@ -217,9 +245,7 @@ export function KerjakanSoalContent() {
                     };
                 })),
                 created_by: currentUserName
-            }
-
-            // Replace with actual submit endpoint
+            } 
             await axios.post(`${API_URL}/api/v1/tob/submit_pengerjaan`, payload)
 
             setAlertData({
