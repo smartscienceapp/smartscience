@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { Users, BookOpen, Trophy, Activity } from "lucide-react";
@@ -17,6 +18,8 @@ export default function GuruDashboard() {
     // State untuk data
     const [chartData, setChartData] = useState<ChartData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [totalPengerjaan, setTotalPengerjaan] = useState<number>(0);
+    const [totalSiswa, setTotalSiswa] = useState<number>(0);
     
     // Mock data untuk inisialisasi (bisa diganti dengan fetch API)
     const mockData: ChartData[] = [
@@ -30,6 +33,22 @@ export default function GuruDashboard() {
     useEffect(() => {
         // Simulasi fetch data
         const fetchData = async () => {
+            try {
+                const API_URL = process.env.NEXT_PUBLIC_API_URL;
+                const res = await axios.get(`${API_URL}/api/v1/tob/total_pengerjaan_tob`);
+                setTotalPengerjaan(res.data.total_pengerjaan);
+            } catch (error) {
+                console.error("Failed to fetch total pengerjaan", error);
+            }
+
+            try {
+                const API_URL = process.env.NEXT_PUBLIC_API_URL;
+                const res = await axios.get(`${API_URL}/api/v1/users/total_siswa`);
+                setTotalSiswa(res.data.total_siswa);
+            } catch (error) {
+                console.error("Failed to fetch total siswa", error);
+            }
+
             try {
                 // Di sini Anda bisa memanggil API endpoint backend Anda
                 // const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/dashboard/guru/stats`);
@@ -69,7 +88,7 @@ export default function GuruDashboard() {
                                     <Users className="h-4 w-4 text-muted-foreground" />
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold">120</div> 
+                                    <div className="text-2xl font-bold">{totalSiswa}</div> 
                                 </CardContent>
                             </Card>  
                             <Card>
@@ -78,7 +97,7 @@ export default function GuruDashboard() {
                                     <Activity className="h-4 w-4 text-muted-foreground" />
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold">+573</div>
+                                    <div className="text-2xl font-bold">+{totalPengerjaan}</div>
                                     <p className="text-xs text-muted-foreground">Pengerjaan soal minggu ini</p>
                                 </CardContent>
                             </Card>
