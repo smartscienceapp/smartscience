@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/dialog"
 import Cookies from "js-cookie"
 import { jwtDecode } from "jwt-decode"
-import { FileText, Check, ChevronsUpDown, Loader2 } from "lucide-react"
+import { FileText, Check, ChevronsUpDown, Loader2, Trophy } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
     Command,
@@ -193,9 +193,9 @@ export function ListTOBContent() {
                 const decoded = jwtDecode<DecodedToken>(token)
                 setCurrentUser(decoded.role || "unknown")
                 setCurrentKelas(decoded.id_kelas)
-                setCurrentUserId(decoded.id_user)  
+                setCurrentUserId(decoded.id_user)
                 if (decoded.id_kelas) {
-                    setSelectedKelasId(decoded.id_kelas.toString()) 
+                    setSelectedKelasId(decoded.id_kelas.toString())
                     const fetchMapel = async () => {
                         try {
                             const payload = { id_kelas: decoded.id_kelas }
@@ -366,6 +366,14 @@ export function ListTOBContent() {
                                                                     Kerjakan Soal
                                                                 </Button>
                                                                 <TOBStatus id_tob={item.id_tob} id_user={currentUserId} />
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    onClick={() => router.push(`/leaderboard/${item.id_tob}`)}
+                                                                >
+                                                                    <Trophy className="mr-2 h-4 w-4" />
+                                                                    Leaderboard
+                                                                </Button>
                                                             </div>
                                                         </TableCell>
                                                     </TableRow>
