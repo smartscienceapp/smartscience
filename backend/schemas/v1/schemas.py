@@ -130,7 +130,7 @@ class JawabanItem(BaseModel):
     is_correct: bool
 
 class SubmitPengerjaanRequest(BaseModel):
-    id_user: str
+    id_user: int
     id_tob: int
     jawaban_siswa: str
     created_by: str
