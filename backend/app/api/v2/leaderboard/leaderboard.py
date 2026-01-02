@@ -8,7 +8,7 @@ from schemas.v2.schemas import GetLeaderboard
 router = APIRouter()
 
 # Ubah ke @router.post
-@router.post("/leaderboard")
+@router.post("/leaderboard_tob")
 def get_leaderboard(
     user: GetLeaderboard,  # Pydantic model akan otomatis dibaca dari JSON Body
     db: Session = Depends(get_db)

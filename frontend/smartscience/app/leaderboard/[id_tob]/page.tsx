@@ -38,7 +38,7 @@ export default function LeaderboardPage() {
 
                 // --- PERUBAHAN UTAMA DI SINI (POST METHOD) ---
                 const response = await axios.post(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/v2/leaderboard`,
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/v2/leaderboard/leaderboard_tob`,
                     {
                         id_tob: parseInt(idTob) // Body request: harus match dengan schema GetLeaderboard
                     },
