@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Loader2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import "katex/dist/katex.min.css"
+import Latex from "react-latex-next"
 
 // --- Interfaces ---
 interface Option {
@@ -96,7 +98,7 @@ export function PreviewTobContent() {
                                     <CardHeader>
                                         <CardTitle className="text-lg flex gap-2">
                                             <Badge variant="outline" className="h-fit">{index + 1}</Badge>
-                                            <span className="font-normal">{soal.isi_soal}</span>
+                                            <span className="font-normal"><Latex>{soal.isi_soal}</Latex></span>
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
@@ -122,7 +124,7 @@ export function PreviewTobContent() {
                                                         {opt.isCorrect && <div className="w-2 h-2 bg-white rounded-full" />}
                                                     </div>
                                                     <div className="flex flex-col gap-2 flex-1">
-                                                        <span className={opt.isCorrect ? "font-medium text-green-800" : ""}>{opt.text}</span>
+                                                        <span className={opt.isCorrect ? "font-medium text-green-800" : ""}><Latex>{opt.text}</Latex></span>
                                                         {opt.image && (
                                                             <img 
                                                                 src={opt.image} 

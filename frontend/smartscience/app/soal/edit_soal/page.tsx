@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ArrowLeft, Plus, Trash2, Save, Loader2} from "lucide-react"
 import { createClient } from "@supabase/supabase-js"
+import "katex/dist/katex.min.css"
+import Latex from "react-latex-next"
 
 // --- Interfaces ---
 interface Option {
@@ -236,14 +238,25 @@ export function EditSoalContent() {
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="space-y-2">
-                                    <Label>Isi Soal</Label>
+                                    <div className="flex justify-between items-center">
+                                        <Label>Isi Soal</Label>
+                                        <span className="text-xs text-muted-foreground">Support LaTeX (contoh: $E=mc^2$)</span>
+                                    </div>
                                     <textarea
                                         className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                        placeholder="Masukkan pertanyaan..."
+                                        placeholder="Masukkan pertanyaan. Gunakan tanda $ di awal dan akhir untuk rumus (misal: $x^2$)"
                                         value={isiSoal}
                                         onChange={(e) => setIsiSoal(e.target.value)}
                                         rows={4}
                                     />
+                                    {isiSoal && (
+                                        <div className="mt-2 rounded-md border p-4 bg-muted/50">
+                                            <p className="text-xs font-medium text-muted-foreground mb-2">Preview Tampilan:</p>
+                                            <div className="text-sm break-words">
+                                                <Latex>{isiSoal}</Latex>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="space-y-2">

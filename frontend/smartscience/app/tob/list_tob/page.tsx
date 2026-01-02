@@ -259,9 +259,7 @@ export function ListTOBContent() {
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
-                                                <TableHead className="w-[100px]">ID TOB</TableHead>
-                                                <TableHead>Kelas</TableHead>
-                                                <TableHead>Mata Pelajaran</TableHead>
+                                                <TableHead>ID TOB</TableHead> 
                                                 <TableHead>Nama TOB</TableHead>
                                                 <TableHead>Aksi</TableHead>
                                             </TableRow>
@@ -284,9 +282,7 @@ export function ListTOBContent() {
                                             ) : (
                                                 dataTOB.map((item) => (
                                                     <TableRow key={item.id_tob}>
-                                                        <TableCell className="font-medium">{item.id_tob}</TableCell>
-                                                        <TableCell>{item.nama_kelas || "-"}</TableCell>
-                                                        <TableCell>{item.nama_mapel || "-"}</TableCell>
+                                                        <TableCell className="font-medium">{item.id_tob}</TableCell> 
                                                         <TableCell>{item.nama_tob}</TableCell>
                                                         <TableCell>
                                                             <div className="flex gap-2">

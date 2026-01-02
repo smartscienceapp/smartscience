@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react"
+import "katex/dist/katex.min.css"
+import Latex from "react-latex-next"
 
 // --- Interfaces ---
 interface Option {
@@ -176,7 +178,7 @@ export function PreviewHasilTobContent() {
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="flex-1 space-y-6 p-6 overflow-y-auto">
-                                    <div className="text-lg font-medium leading-relaxed">{currentSoal.isi_soal}</div>
+                                    <div className="text-lg font-medium leading-relaxed"><Latex>{currentSoal.isi_soal}</Latex></div>
                                     
                                     {currentSoal.image_soal && (
                                         <div className="border rounded-md p-2 w-fit bg-muted/10">
@@ -223,7 +225,7 @@ export function PreviewHasilTobContent() {
                                                     </div>
                                                     <div className="flex flex-col gap-2 flex-1">
                                                         <Label className="text-base font-normal cursor-default">
-                                                            {opt.text}
+                                                            <Latex>{opt.text}</Latex>
                                                             {!isSelected && isCorrect && (
                                                                 <span className="ml-2 text-xs text-green-600 font-medium">(Jawaban Benar)</span>
                                                             )}

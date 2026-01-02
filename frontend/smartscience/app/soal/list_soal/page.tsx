@@ -24,6 +24,8 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { ArrowLeft, Trash2, Plus, Loader2 } from "lucide-react"
+import "katex/dist/katex.min.css"
+import Latex from "react-latex-next"
 
 // --- Interfaces ---
 interface SoalTOB {
@@ -146,7 +148,7 @@ export function ListSoalContent() {
                                                 listSoal.map((soal, index) => (
                                                     <TableRow key={soal.id_soal}>
                                                         <TableCell>{index + 1}</TableCell>
-                                                        <TableCell className="max-w-md truncate" title={soal.isi_soal}>{soal.isi_soal}</TableCell>
+                                                        <TableCell className="max-w-md truncate" title={soal.isi_soal}><Latex>{soal.isi_soal}</Latex></TableCell>
                                                         <TableCell>{soal.nama_mapel}</TableCell>
                                                         <TableCell>{soal.nama_kelas}</TableCell>
                                                         <TableCell>
