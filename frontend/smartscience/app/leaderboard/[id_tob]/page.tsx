@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Trophy, Medal, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import Cookies from "js-cookie";
 
 interface LeaderboardItem {
@@ -17,9 +17,9 @@ interface LeaderboardItem {
     nilai: number;
 }
 
-export default function LeaderboardPage({ params }: { params: { id_tob: string } }) {
-    // Unwrapping params (Next.js 13+ pattern, though direct access works in older versions)
-    const idTob = params.id_tob;
+export default function LeaderboardPage() {
+    const params = useParams();
+    const idTob = params.id_tob as string;
 
     const [leaderboard, setLeaderboard] = useState<LeaderboardItem[]>([]);
     const [loading, setLoading] = useState(true);
@@ -27,7 +27,11 @@ export default function LeaderboardPage({ params }: { params: { id_tob: string }
 
     useEffect(() => {
         const fetchLeaderboard = async () => {
-            if (!idTob) return;
+            if (!idTob) {
+                setLoading(false);
+                return;
+            }
+            setLoading(true);
 
             try {
                 const token = Cookies.get("token");
