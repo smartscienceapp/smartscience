@@ -1,14 +1,18 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import func, desc
+from fastapi import APIRouter, Depends
+from sqlalchemy import desc
 from models.models import HasilJawabanSiswa, User
-from sqlalchemy.orm import Session  
+from sqlalchemy.orm import Session
 from app.database.session import get_db
 from schemas.v2.schemas import GetLeaderboard
 
-router = APIRouter() 
+router = APIRouter()
 
-@router.get("/leaderboard")
-def get_leaderboard(user : GetLeaderboard, db: Session = Depends(get_db)): 
+# Ubah ke @router.post
+@router.post("/leaderboard")
+def get_leaderboard(
+    user: GetLeaderboard,  # Pydantic model akan otomatis dibaca dari JSON Body
+    db: Session = Depends(get_db)
+):
     results = db.query(HasilJawabanSiswa, User.username)\
         .join(User, HasilJawabanSiswa.id_user == User.id_user)\
         .filter(HasilJawabanSiswa.id_tob == user.id_tob)\
