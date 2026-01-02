@@ -21,7 +21,7 @@ def list_tob(user: TOBFind, db: Session = Depends(get_db)):
             TOB.nama_tob,
             MataPelajaran.nama_mapel,
             Kelas.nama_kelas,
-            HasilJawabanSiswa.id_hasil
+            HasilJawabanSiswa.id_hasil_jawaban.label("id_hasil")
         )
         .join(MataPelajaran, TOB.id_mapel == MataPelajaran.id_mapel)
         .join(MapelKelas, MataPelajaran.id_mapel == MapelKelas.id_mapel) # Jembatan
