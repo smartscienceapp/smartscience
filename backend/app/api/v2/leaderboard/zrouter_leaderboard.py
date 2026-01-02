@@ -6,4 +6,4 @@ from app.api.v2.leaderboard import (
 
 leaderboard_router = APIRouter()
 
-leaderboard_router.include_router(leaderboard)
+leaderboard_router.include_router(leaderboard.router)
