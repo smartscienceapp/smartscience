@@ -59,7 +59,7 @@ interface DecodedToken {
 
 interface Soal {
     id_soal: number;
-    isi_soal: string;
+    nama_soal: string;
 }
 
 export const dynamic = "force-dynamic";
@@ -251,7 +251,7 @@ export function TambahSoalContent() {
                                 <CardDescription>Pilih kelas, mata pelajaran dan bab untuk melihat soal.</CardDescription>
                             </CardHeader>
                             <CardContent className="flex flex-col sm:flex-row gap-4 items-end">
-                                <div className="grid w-full max-w-sm items-center gap-1.5">
+                                <div className="space-y-2">
                                     <Label htmlFor="filter-kelas">Pilih Kelas</Label>
                                     <Select value={selectedKelasId} onValueChange={handleKelasChange}>
                                         <SelectTrigger id="filter-kelas" className="w-full">
@@ -266,7 +266,7 @@ export function TambahSoalContent() {
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <div className="grid w-full max-w-sm items-center gap-1.5">
+                                <div className="space-y-2">
                                     <Label htmlFor="filter-mapel">Pilih Mata Pelajaran</Label>
                                     <Select value={selectedMapelId} onValueChange={handleMapelChange} disabled={!selectedKelasId}>
                                         <SelectTrigger id="filter-mapel" className="w-full">
@@ -281,7 +281,7 @@ export function TambahSoalContent() {
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <div className="grid w-full max-w-sm items-center gap-1.5">
+                                <div className="space-y-2">
                                     <Label htmlFor="filter-mapel">Pilih Bab</Label>
                                     <Select value={selectedBabId} onValueChange={setSelectedBabId} disabled={!selectedMapelId}>
                                         <SelectTrigger id="filter-bab" className="w-full">
@@ -337,7 +337,7 @@ export function TambahSoalContent() {
                                                     .map((item) => (
                                                         <TableRow key={item.id_soal}>
                                                             <TableCell className="font-medium">{item.id_soal}</TableCell>
-                                                            <TableCell>{item.isi_soal}</TableCell>
+                                                            <TableCell>{item.nama_soal}</TableCell>
                                                             <TableCell>
                                                                 <Button onClick={() => handlePlusClick(item.id_soal)}>
                                                                     <Plus className="mr-2 h-4 w-4" />
