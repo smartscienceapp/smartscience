@@ -10,9 +10,9 @@ import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import Cookies from "js-cookie"
-import { jwtDecode } from "jwt-decode" 
+import { jwtDecode } from "jwt-decode"
 import { cn } from "@/lib/utils"
-import {Loader2} from "lucide-react"
+import { Loader2 } from "lucide-react"
 import "katex/dist/katex.min.css"
 import Latex from "react-latex-next"
 
@@ -20,21 +20,22 @@ import Latex from "react-latex-next"
 interface Option {
     text: string;
     image?: string;
-    isCorrect?: boolean; 
+    isCorrect?: boolean;
 }
 
 interface SoalExam {
     id_soal: number;
     isi_soal: string;
     image_soal: string | null;
-    option: Option[] | string; 
+    option: Option[] | string;
 }
 
 interface DecodedToken {
     sub?: string;
-    username?: string;
+    user?: string;
     role: string;
     id_user?: number;
+    id_kelas?: number;
 }
 
 export const dynamic = "force-dynamic";
@@ -43,14 +44,17 @@ export function KerjakanSoalContent() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL
     const router = useRouter()
     const searchParams = useSearchParams()
-    const id_tob = searchParams.get("id_tob") 
+    const id_tob = searchParams.get("id_tob")
 
     const [listSoal, setListSoal] = useState<SoalExam[]>([])
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-    const [answers, setAnswers] = useState<Record<number, string>>({}) 
+    const [answers, setAnswers] = useState<Record<number, string>>({})
     const [isLoading, setIsLoading] = useState(true)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [currentUser, setCurrentUser] = useState<string>("unknown")
+    const [currentKelas, setCurrentKelas] = useState<number>()
+    const [currentUserId, setCurrentUserId] = useState<number>()
+    const [currentUserName, setCurrentUserName] = useState<string>("unknown") 
 
     // Prevent accidental exit
     useEffect(() => {
@@ -80,8 +84,11 @@ export function KerjakanSoalContent() {
         if (token) {
             try {
                 const decoded = jwtDecode<DecodedToken>(token)
-                const userIdentifier = decoded.sub || decoded.username || decoded.role || "unknown"
-                setCurrentUser(userIdentifier)
+                const userIdentifier = decoded.sub || decoded.role || "unknown"
+                setCurrentUser(decoded.role || "unknown")
+                setCurrentKelas(decoded.id_kelas)
+                setCurrentUserId(decoded.id_user)
+                setCurrentUserName(decoded.user || "unknown")
             } catch (error) {
                 console.error("Token invalid", error)
             }
@@ -98,7 +105,7 @@ export function KerjakanSoalContent() {
             const response = await axios.post(`${API_URL}/api/v1/soal/get_detail_soal_full`, {
                 id_tob: id
             })
-            
+
             if (response.data && response.data.soaltob) {
                 const mappedData = response.data.soaltob.map((item: SoalExam) => {
                     let parsedOption = item.option
@@ -125,7 +132,7 @@ export function KerjakanSoalContent() {
     const handleAnswer = (value: string) => {
         const currentSoal = listSoal[currentQuestionIndex]
         if (!currentSoal) return
-        
+
         setAnswers(prev => ({
             ...prev,
             [currentSoal.id_soal]: value
@@ -149,9 +156,9 @@ export function KerjakanSoalContent() {
         setIsSubmitting(true)
         try {
             // Payload structure depends on backend. Assuming a generic structure here.
-            const paramMapel = searchParams.get("id_mapel") 
+            const paramMapel = searchParams.get("id_mapel")
             const payload = {
-                id_user: currentUser,
+                id_user: currentUserId,
                 id_tob: tobId,
                 jawaban_siswa: JSON.stringify(Object.entries(answers).map(([id_soal_str, jawaban]) => {
                     const id_soal = parseInt(id_soal_str);
@@ -167,12 +174,12 @@ export function KerjakanSoalContent() {
                         is_correct
                     };
                 })),
-                created_by: currentUser
+                created_by: currentUserName
             }
 
             // Replace with actual submit endpoint
             await axios.post(`${API_URL}/api/v1/tob/submit_pengerjaan`, payload)
-            
+
             alert("Jawaban berhasil dikirim!")
             router.push(`/tob/list_tob_siswa?id_mapel=${paramMapel}`)
         } catch (error: any) {
@@ -189,7 +196,7 @@ export function KerjakanSoalContent() {
             setCurrentQuestionIndex(prev => prev + 1)
         }
     }
-    
+
     const prevQuestion = () => {
         if (currentQuestionIndex > 0) {
             setCurrentQuestionIndex(prev => prev - 1)
@@ -228,26 +235,26 @@ export function KerjakanSoalContent() {
                                 </CardHeader>
                                 <CardContent className="flex-1 space-y-6 p-6 overflow-y-auto">
                                     <div className="text-lg font-medium leading-relaxed"><Latex>{currentSoal.isi_soal}</Latex></div>
-                                    
+
                                     {currentSoal.image_soal && (
                                         <div className="border rounded-md p-2 w-fit bg-muted/10">
-                                            <img 
-                                                src={currentSoal.image_soal} 
-                                                alt={`Gambar soal ${currentQuestionIndex + 1}`} 
+                                            <img
+                                                src={currentSoal.image_soal}
+                                                alt={`Gambar soal ${currentQuestionIndex + 1}`}
                                                 className="max-h-80 object-contain"
                                             />
                                         </div>
                                     )}
-                                    
+
                                     <div className="pt-4">
-                                        <RadioGroup 
-                                            value={answers[currentSoal.id_soal] || ""} 
+                                        <RadioGroup
+                                            value={answers[currentSoal.id_soal] || ""}
                                             onValueChange={handleAnswer}
                                             className="space-y-3"
                                         >
                                             {Array.isArray(currentSoal.option) && currentSoal.option.map((opt, idx) => (
-                                                <div 
-                                                    key={idx} 
+                                                <div
+                                                    key={idx}
                                                     className={cn(
                                                         "flex items-start space-x-3 border p-4 rounded-lg transition-colors cursor-pointer hover:bg-accent",
                                                         answers[currentSoal.id_soal] === opt.text ? "border-primary bg-accent" : "border-border"
@@ -260,9 +267,9 @@ export function KerjakanSoalContent() {
                                                             <Latex>{opt.text}</Latex>
                                                         </Label>
                                                         {opt.image && (
-                                                            <img 
-                                                                src={opt.image} 
-                                                                alt={`Option ${idx + 1}`} 
+                                                            <img
+                                                                src={opt.image}
+                                                                alt={`Option ${idx + 1}`}
                                                                 className="h-24 w-auto object-contain border rounded-md bg-white self-start"
                                                             />
                                                         )}
@@ -273,19 +280,19 @@ export function KerjakanSoalContent() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="flex justify-between border-t p-6 bg-muted/20">
-                                    <Button 
-                                        variant="outline" 
-                                        onClick={prevQuestion} 
+                                    <Button
+                                        variant="outline"
+                                        onClick={prevQuestion}
                                         disabled={currentQuestionIndex === 0}
                                         className="w-32"
                                     >
                                         Sebelumnya
                                     </Button>
-                                    
+
                                     {currentQuestionIndex === listSoal.length - 1 ? (
-                                        <Button 
-                                            onClick={handleSubmit} 
-                                            disabled={isSubmitting} 
+                                        <Button
+                                            onClick={handleSubmit}
+                                            disabled={isSubmitting}
                                             className="w-32 bg-green-600 hover:bg-green-700"
                                         >
                                             Submit
@@ -308,23 +315,23 @@ export function KerjakanSoalContent() {
                             <h3 className="font-semibold text-lg">Navigasi Soal</h3>
                             <p className="text-sm text-muted-foreground">Klik nomor untuk pindah soal</p>
                         </div>
-                        
+
                         <div className="flex-1 p-4 overflow-y-auto">
                             <div className="grid grid-cols-5 gap-2">
                                 {listSoal.map((_, idx) => {
                                     const isAnswered = !!answers[listSoal[idx].id_soal];
                                     const isCurrent = currentQuestionIndex === idx;
-                                    
+
                                     return (
                                         <button
                                             key={idx}
                                             onClick={() => jumpToQuestion(idx)}
                                             className={cn(
                                                 "aspect-square rounded-md flex items-center justify-center text-sm font-medium transition-all border",
-                                                isCurrent 
-                                                    ? "ring-2 ring-primary border-primary bg-primary/10 text-primary" 
-                                                    : isAnswered 
-                                                        ? "bg-green-500 text-white border-green-600 hover:bg-green-600" 
+                                                isCurrent
+                                                    ? "ring-2 ring-primary border-primary bg-primary/10 text-primary"
+                                                    : isAnswered
+                                                        ? "bg-green-500 text-white border-green-600 hover:bg-green-600"
                                                         : "bg-background hover:bg-accent text-muted-foreground"
                                             )}
                                         >
@@ -350,10 +357,10 @@ export function KerjakanSoalContent() {
                                     <span>Sedang dibuka</span>
                                 </div>
                             </div>
-                            
-                            <Button 
-                                onClick={handleSubmit} 
-                                disabled={isSubmitting} 
+
+                            <Button
+                                onClick={handleSubmit}
+                                disabled={isSubmitting}
                                 className="w-full bg-green-600 hover:bg-green-700 h-12 text-lg"
                             >
                                 Selesai & Submit
