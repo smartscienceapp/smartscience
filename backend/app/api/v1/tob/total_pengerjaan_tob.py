@@ -27,4 +27,4 @@ def total_pengerjaan_tob(db: Session = Depends(get_db)):
         HasilJawabanSiswa.created_at >= start_of_week  # Filter minggu ini
     ).distinct().count() # Hitung kombinasi unik user & tob
     
-    return {"total_siswa": total_siswa}
+    return {"total_pengerjaan": total_siswa}
