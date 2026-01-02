@@ -9,6 +9,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 import Cookies from "js-cookie"
 import { jwtDecode } from "jwt-decode"
 import { cn } from "@/lib/utils"
@@ -55,6 +63,20 @@ export function KerjakanSoalContent() {
     const [currentKelas, setCurrentKelas] = useState<number>()
     const [currentUserId, setCurrentUserId] = useState<number>()
     const [currentUserName, setCurrentUserName] = useState<string>("unknown") 
+    const [alertOpen, setAlertOpen] = useState(false)
+    const [alertData, setAlertData] = useState({
+        title: "",
+        description: "",
+        onAction: null as (() => void) | null
+    })
+
+    const handleAlertClose = () => {
+        setAlertOpen(false)
+        if (alertData.onAction) {
+            alertData.onAction()
+            setAlertData(prev => ({ ...prev, onAction: null }))
+        }
+    }
 
     // Prevent accidental exit
     useEffect(() => {
@@ -63,7 +85,12 @@ export function KerjakanSoalContent() {
 
         const handlePopState = () => {
             window.history.pushState(null, "", window.location.href);
-            alert("Anda tidak dapat kembali ke halaman sebelumnya selama ujian berlangsung.");
+            setAlertData({
+                title: "Peringatan",
+                description: "Anda tidak dapat kembali ke halaman sebelumnya selama ujian berlangsung.",
+                onAction: null
+            })
+            setAlertOpen(true)
         };
 
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -141,13 +168,23 @@ export function KerjakanSoalContent() {
 
     const handleSubmit = async () => {
         if (!currentUser) {
-            alert("Sesi pengguna tidak valid. Silakan login ulang.")
+            setAlertData({
+                title: "Gagal",
+                description: "Sesi pengguna tidak valid. Silakan login ulang.",
+                onAction: null
+            })
+            setAlertOpen(true)
             return
         }
 
         const tobId = parseInt(id_tob || "0")
         if (!tobId) {
-            alert("ID TOB tidak valid.")
+            setAlertData({
+                title: "Gagal",
+                description: "ID TOB tidak valid.",
+                onAction: null
+            })
+            setAlertOpen(true)
             return
         }
 
@@ -180,12 +217,21 @@ export function KerjakanSoalContent() {
             // Replace with actual submit endpoint
             await axios.post(`${API_URL}/api/v1/tob/submit_pengerjaan`, payload)
 
-            alert("Jawaban berhasil dikirim!")
-            router.push(`/tob/list_tob_siswa?id_mapel=${paramMapel}`)
+            setAlertData({
+                title: "Berhasil",
+                description: "Jawaban berhasil dikirim!",
+                onAction: () => router.push(`/tob/list_tob_siswa?id_mapel=${paramMapel}`)
+            })
+            setAlertOpen(true)
         } catch (error: any) {
             console.error("Submit error:", error)
             const errorMessage = error.response?.data?.detail || "Terjadi kesalahan saat mengirim jawaban."
-            alert(errorMessage)
+            setAlertData({
+                title: "Gagal",
+                description: errorMessage,
+                onAction: null
+            })
+            setAlertOpen(true)
         } finally {
             setIsSubmitting(false)
         }
@@ -369,6 +415,19 @@ export function KerjakanSoalContent() {
                     </aside>
                 </main>
             </div>
+            <Dialog open={alertOpen} onOpenChange={(open) => !open && handleAlertClose()}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{alertData.title}</DialogTitle>
+                        <DialogDescription>
+                            {alertData.description}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button onClick={handleAlertClose}>OK</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
