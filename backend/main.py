@@ -11,6 +11,7 @@ from backend.app.api.v1.tob.zrouter_tob import tob_router
 from backend.app.api.v1.bab.zrouter_bab import bab_router
 
 
+
 Base.metadata.create_all(bind=engine_database) 
 
 # Inisialisasi App
