@@ -9,6 +9,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 import Cookies from "js-cookie"
 import { jwtDecode } from "jwt-decode"
 
@@ -35,6 +43,8 @@ export default function CreateTobPage() {
     const [kelasList, setKelasList] = useState<Kelas[]>([])
     const [mataPelajaranList, setMataPelajaranList] = useState<MataPelajaran[]>([])
     const [currentUser, setCurrentUser] = useState<string>("unknown")
+    const [alertOpen, setAlertOpen] = useState(false)
+    const [alertData, setAlertData] = useState({ title: "", description: "" })
 
     const [formData, setFormData] = useState({
         id_kelas: "",
@@ -95,18 +105,23 @@ export default function CreateTobPage() {
         })
     }
 
+    const showAlert = (title: string, description: string) => {
+        setAlertData({ title, description })
+        setAlertOpen(true)
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!formData.id_kelas) {
-            alert("Harap pilih Kelas terlebih dahulu")
+            showAlert("Peringatan", "Harap pilih Kelas terlebih dahulu")
             return
         }
         if (!formData.id_mapel) {
-            alert("Harap pilih Mata Pelajaran terlebih dahulu")
+            showAlert("Peringatan", "Harap pilih Mata Pelajaran terlebih dahulu")
             return
         }
         if (!formData.nama_tob) {
-            alert("Harap isi Nama TOB")
+            showAlert("Peringatan", "Harap isi Nama TOB")
             return
         }
 
@@ -123,12 +138,12 @@ export default function CreateTobPage() {
             // Menggunakan endpoint create_bab (asumsi nama endpoint)
             await axios.post(`${API_URL}/api/v1/tob/create_tob`, payload)
             setIsLoading(false)
-            alert("Berhasil membuat tob")
+            showAlert("Berhasil", "Berhasil membuat tob")
             router.refresh()
         } catch (error) {
             console.error(error)
             setIsLoading(false)
-            alert("Gagal membuat tob")
+            showAlert("Gagal", "Gagal membuat tob")
         }
     }
     return (
@@ -200,6 +215,17 @@ export default function CreateTobPage() {
                     </div>
                 </main>
             </div >
+            <Dialog open={alertOpen} onOpenChange={setAlertOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{alertData.title}</DialogTitle>
+                        <DialogDescription>{alertData.description}</DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button onClick={() => setAlertOpen(false)}>OK</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div >
     )
 }
