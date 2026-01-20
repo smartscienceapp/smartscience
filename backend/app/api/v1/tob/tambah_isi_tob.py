@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from app.database.session import get_db
 from models.models import TOB, Soal, SoalTOB
 from schemas.v1.schemas import AddSoalTOB  
@@ -21,6 +22,9 @@ def create_tob(user: AddSoalTOB, db: Session = Depends(get_db)):
         return {
             "message": "Soal inserted to TOB successfully",
         }   
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Soal sudah ada di TOB ini")
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=f"Database Error: {str(e)}")    

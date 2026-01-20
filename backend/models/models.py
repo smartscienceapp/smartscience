@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Float
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Float, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database.base import Base
@@ -113,6 +113,7 @@ class Soal(Base) :
     
 class SoalTOB(Base):
     __tablename__ = "t_soal_tob"
+    __table_args__ = (UniqueConstraint('id_soal', 'id_tob', name='unique_soal_tob'),)
     id_soal_tob = Column(Integer, primary_key=True, index=True) 
     id_soal = Column(Integer, ForeignKey("t_soal.id_soal", ondelete="CASCADE"))
     id_tob = Column(Integer, ForeignKey("t_tob.id_tob", ondelete="CASCADE"))
