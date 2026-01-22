@@ -300,15 +300,15 @@ export function ListSoalContent() {
         }
     }
 
-    const handleDeleteClick = async (id_bab: number) => {
-        setToDelete(id_bab)
+    const handleDeleteClick = async (id_soal: number) => {
+        setToDelete(id_soal)
         setDeleteDialogOpen(true)
     }
 
     const confirmDelete = async () => {
         try {
             const payload = {
-                id_bab: Number(toDelete)
+                id_soal: Number(toDelete)
             }
             await axios.post(`${API_URL}/api/v1/soal/delete_soal`, payload)
             handleFilter()
