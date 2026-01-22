@@ -313,10 +313,18 @@ export function ListSoalContent() {
             await axios.post(`${API_URL}/api/v1/soal/delete_soal`, payload)
             handleFilter()
         } catch (error: any) {
-            const errorMessage =
-                error.response?.data?.message ||
-                error.response?.data?.detail ||
-                "Terjadi kesalahan koneksi atau server tidak merespons.";
+            let errorMessage = "Terjadi kesalahan koneksi atau server tidak merespons.";
+            const responseData = error.response?.data;
+            if (responseData) {
+                if (responseData.message) {
+                    errorMessage = responseData.message;
+                } else if (responseData.detail) {
+                    const detail = responseData.detail;
+                    if (typeof detail === "string") errorMessage = detail;
+                    else if (Array.isArray(detail)) errorMessage = detail.map((e: any) => e.msg || JSON.stringify(e)).join(", ");
+                    else if (typeof detail === "object") errorMessage = detail.msg || JSON.stringify(detail);
+                }
+            }
             setAlertData({
                 title: "Gagal",
                 description: errorMessage,
