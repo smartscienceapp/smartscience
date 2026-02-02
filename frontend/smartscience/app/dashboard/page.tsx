@@ -45,40 +45,40 @@ export default function DashboardPage() {
   // --- Effects ---
   useEffect(() => {
     const initDashboard = async () => {
-      console.log("--- DASHBOARD INIT ---");
+      console.log("--- DASHBOARD INIT (FORCE REFRESH) ---");
       const token = Cookies.get("token");
       
-      // DEBUG: Allow render even if token is missing (for testing UI layout)
-      // remove this 'if' block when strictly enforcing auth
-      if (!token) { 
-        console.warn("No token found - running in Layout Test Mode");
-      }
+      // DEBUG: Tetap jalan meski tanpa token untuk cek UI
+      if (!token) console.warn("No token found - running in Layout Test Mode");
 
       try {
-        // Decode token if exists, otherwise assume authorized for testing
         const decoded = token ? jwtDecode<DecodedToken>(token) : { role: "admin" }; 
         
         if (decoded.role === "admin" || decoded.role === "guru") {
           setIsAuthorized(true);
           try {
-            // 2. CACHE BUSTING HEADERS (Fixes 304 Issue)
+            // TRIK ANTI-CACHE: Tambahkan timestamp agar URL selalu unik
+            const timeStamp = new Date().getTime(); 
+            
+            // Konfigurasi Header tetap dipertahankan
             const config = {
               headers: { 
-                'Cache-Control': 'no-cache', 
+                'Cache-Control': 'no-cache, no-store, must-revalidate', 
                 'Pragma': 'no-cache', 
                 'Expires': '0' 
               }
             };
 
-            console.log(`Fetching from: ${API_URL}`);
+            console.log(`Fetching FRESH data from: ${API_URL}`);
             
+            // Perhatikan penambahan "?_t=${timeStamp}" di belakang setiap URL
             const [resTotal, resLastUser, resGrades] = await Promise.all([
-              axios.get(`${API_URL}/api/v1/users/total_user`, config),
-              axios.get(`${API_URL}/api/v1/users/last_user_create`, config),
-              axios.get(`${API_URL}/api/v2/daftar_nilai/rata_rata_nilai`, config)
+              axios.get(`${API_URL}/api/v1/users/total_user?_t=${timeStamp}`, config),
+              axios.get(`${API_URL}/api/v1/users/last_user_create?_t=${timeStamp}`, config),
+              axios.get(`${API_URL}/api/v2/daftar_nilai/rata_rata_nilai?_t=${timeStamp}`, config)
             ]);
 
-            console.log("Total User Payload:", resTotal.data); // Check console for "61"
+            console.log("FRESH PAYLOAD (Total User):", resTotal.data); 
 
             setTotalSiswa(resTotal.data.total_user);
             setLastUserCreatedAt(resLastUser.data.created_at);
