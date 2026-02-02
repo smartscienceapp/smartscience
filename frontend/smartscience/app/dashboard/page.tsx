@@ -4,9 +4,8 @@ import axios from "axios";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { UserMenu } from "@/components/dashboard/user-menu";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Activity, Users } from "lucide-react";
+import { Activity, Users, AlertCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { id } from "date-fns/locale"; // Optional: for Indonesian format
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import {
@@ -28,7 +27,10 @@ interface DecodedToken {
 interface RataNilai {
   rata: number;
   mapel: string;
-} 
+}
+
+// 1. HARDCODE URL (Ensures we hit the live server)
+const API_URL = "https://smartscience-smartscience-backend.hf.space";
 
 export default function DashboardPage() {
   // --- State ---
@@ -42,44 +44,57 @@ export default function DashboardPage() {
 
   // --- Effects ---
   useEffect(() => {
-    const initDashboard = async () => { 
+    const initDashboard = async () => {
+      console.log("--- DASHBOARD INIT ---");
       const token = Cookies.get("token");
       
-      // DEBUG: Remove this if-check if you want to test without login locally
+      // DEBUG: Allow render even if token is missing (for testing UI layout)
+      // remove this 'if' block when strictly enforcing auth
       if (!token) { 
-        console.error("No token found in cookies");
-        setIsAuthLoading(false); 
-        return; 
+        console.warn("No token found - running in Layout Test Mode");
       }
 
       try {
-        const decoded = jwtDecode<DecodedToken>(token); 
+        // Decode token if exists, otherwise assume authorized for testing
+        const decoded = token ? jwtDecode<DecodedToken>(token) : { role: "admin" }; 
         
         if (decoded.role === "admin" || decoded.role === "guru") {
           setIsAuthorized(true);
-          try { 
+          try {
+            // 2. CACHE BUSTING HEADERS (Fixes 304 Issue)
+            const config = {
+              headers: { 
+                'Cache-Control': 'no-cache', 
+                'Pragma': 'no-cache', 
+                'Expires': '0' 
+              }
+            };
+
+            console.log(`Fetching from: ${API_URL}`);
             
             const [resTotal, resLastUser, resGrades] = await Promise.all([
-              axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/total_user`),
-              axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/last_user_create`),
-              axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v2/daftar_nilai/rata_rata_nilai`)
-            ]); 
+              axios.get(`${API_URL}/api/v1/users/total_user`, config),
+              axios.get(`${API_URL}/api/v1/users/last_user_create`, config),
+              axios.get(`${API_URL}/api/v2/daftar_nilai/rata_rata_nilai`, config)
+            ]);
+
+            console.log("Total User Payload:", resTotal.data); // Check console for "61"
 
             setTotalSiswa(resTotal.data.total_user);
             setLastUserCreatedAt(resLastUser.data.created_at);
             setGradeData(resGrades.data);
+            
           } catch (error) {
             console.error("API Fetch Error:", error);
           } finally {
             setIsDataLoading(false);
           }
         } else {
-          console.warn("Unauthorized Role");
           setIsAuthorized(false); 
         }
       } catch (error) {
-        console.error("Token Decode Error:", error);
         setIsAuthorized(false); 
+        setIsAuthLoading(false); 
       } finally { 
         setIsAuthLoading(false); 
       }
@@ -90,94 +105,127 @@ export default function DashboardPage() {
   const renderTimeAgo = (dateString: string | null) => {
     if (!dateString) return "Belum ada data";
     try {
-      const dateObj = new Date(dateString);
-      // Added locale for better formatting, optional
-      return formatDistanceToNow(dateObj, { addSuffix: true }); 
+      return formatDistanceToNow(new Date(dateString), { addSuffix: true });
     } catch (error) { return "Invalid date"; }
   };
 
-  if (isAuthLoading) return <div>Checking Auth...</div>;
-  if (!isAuthorized) return <div>Unauthorized Access. Role must be Admin/Guru.</div>;
+  // Skip auth check return for UI testing
+  // if (isAuthLoading) return <div>Checking Auth...</div>;
+  // if (!isAuthorized) return <div>Unauthorized</div>;
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-muted/40">
       <Sidebar />
       <div className="flex flex-1 flex-col h-full">
+        {/* HEADER */}
         <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-background px-6 shadow-sm">
-          <h1 className="text-xl font-semibold md:text-2xl">Overview</h1>
+          <h1 className="text-xl font-semibold md:text-2xl">Dashboard Guru</h1>
           <div className="ml-auto"><UserMenu /></div>
         </header>
 
-        <main className="flex flex-1 flex-col gap-4 p-4 md:p-6 min-h-0">
+        <main className="flex flex-1 flex-col gap-4 p-4 md:p-6 min-h-0 overflow-y-auto">
           
-          {/* TOP SECTION */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 shrink-0">
-            <Card className="shadow-sm">
+          {/* --- TOP ROW: STATS (Matches Screenshot Layout) --- */}
+          <div className="grid gap-4 md:grid-cols-2">
+            
+            {/* Card 1: Total Siswa */}
+            <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total User Aktif</CardTitle>
+                <CardTitle className="text-sm font-medium">Total Siswa</CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{isDataLoading ? "..." : totalSiswa}</div>
+                <div className="text-3xl font-bold">{isDataLoading ? "..." : totalSiswa}</div>
+              </CardContent>
+            </Card>
+
+            {/* Card 2: Aktivitas (Last User Create) */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Aktivitas</CardTitle>
+                <Activity className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                 <div className="text-2xl font-bold">New User</div>
+                 <p className="text-xs text-muted-foreground mt-1">
+                    {isDataLoading ? "Loading..." : `Registered ${renderTimeAgo(lastUserCreatedAt)}`}
+                 </p>
               </CardContent>
             </Card>
           </div>
 
-          {/* BOTTOM SECTION */}
-          <div className="flex-1 grid gap-4 md:grid-cols-1 lg:grid-cols-7 min-h-0">
+          {/* --- BOTTOM ROW: CHART + ALERT (Matches Screenshot Layout) --- */}
+          <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
             
-            {/* CHART */}
-            <Card className="col-span-4 shadow-sm flex flex-col h-full">
-              <CardHeader className="shrink-0 pb-2">
-                <CardTitle>Rata-Rata Nilai</CardTitle>
-                <CardDescription>Performa per mata pelajaran</CardDescription>
+            {/* LEFT: CHART (Takes up 2 columns) */}
+            <Card className="lg:col-span-2 shadow-sm flex flex-col h-[400px]">
+              <CardHeader>
+                <CardTitle>Rata-rata Nilai per Mata Pelajaran</CardTitle>
+                <CardDescription>Grafik perbandingan rata-rata nilai siswa.</CardDescription>
               </CardHeader>
-              <CardContent className="flex-1 min-h-0 pb-4 pl-0">
+              <CardContent className="flex-1 min-h-0 pb-4">
                 {isDataLoading ? (
                    <div className="flex h-full items-center justify-center">Loading Data...</div>
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={gradeData} layout="vertical" margin={{ left: 10, right: 30, top: 10, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                      <XAxis type="number" domain={[0, 100]} hide />
-                      <YAxis 
+                    <BarChart data={gradeData} barSize={40}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis 
                         dataKey="mapel" 
-                        type="category" 
-                        width={150} 
-                        tick={{ fontSize: 11, fill: '#64748b' }} 
+                        tick={{ fontSize: 10, fill: '#888888' }} 
                         interval={0}
+                        angle={-15}
+                        textAnchor="end"
+                        height={60}
                       />
-                      <Tooltip contentStyle={{ borderRadius: '8px' }} />
-                      <Bar dataKey="rata" radius={[0, 4, 4, 0]} barSize={24}>
-                        {gradeData.map((entry, index) => (
-                            /* FIXED: Hex color was missing a digit (#00000 -> #000000) */
-                            <Cell key={`cell-${index}`} fill={'#000000'} />
-                        ))}
-                      </Bar>
+                      <YAxis 
+                         domain={[0, 100]}
+                         tick={{ fontSize: 12, fill: '#888888' }} 
+                      />
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} 
+                        cursor={{ fill: 'transparent' }}
+                      />
+                      {/* FIXED COLOR to Black (#000000) */}
+                      <Bar dataKey="rata" radius={[4, 4, 0, 0]} fill="#000000" />
                     </BarChart>
                   </ResponsiveContainer>
                 )}
               </CardContent>
             </Card>
 
-            {/* ACTIVITY (Last User) */}
-            <Card className="col-span-3 shadow-sm h-full overflow-y-auto">
-              <CardHeader className="shrink-0">
-                <CardTitle>Aktivitas Terbaru</CardTitle>
-                <CardDescription>Pendaftaran User Terakhir</CardDescription>
+            {/* RIGHT: PERLU PERHATIAN (Takes up 1 column) */}
+            {/* NOTE: You do not have an endpoint for this yet. This is Static Data. */}
+            <Card className="lg:col-span-1 shadow-sm h-[400px] overflow-hidden flex flex-col">
+              <CardHeader>
+                <CardTitle>Perlu Perhatian</CardTitle>
+                <CardDescription>Siswa dengan nilai di bawah KKM.</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-4">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
-                    <Activity className="h-4 w-4 text-primary" />
-                  </div>
-                  <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium leading-none">User Registered</p>
-                    <p className="text-sm text-muted-foreground">
-                      {isDataLoading ? "..." : renderTimeAgo(lastUserCreatedAt)}
-                    </p>
-                  </div>
-                </div>
+              <CardContent className="overflow-y-auto">
+                 <div className="space-y-4">
+                    {/* MOCK DATA - Replace with real API map later */}
+                    <div className="flex items-center justify-between border-b pb-2">
+                      <div>
+                        <p className="font-medium">Ahmad Rizki</p>
+                        <p className="text-xs text-muted-foreground">Fisika</p>
+                      </div>
+                      <span className="font-bold text-red-500">45</span>
+                    </div>
+                    <div className="flex items-center justify-between border-b pb-2">
+                      <div>
+                        <p className="font-medium">Siti Aminah</p>
+                        <p className="text-xs text-muted-foreground">Matematika</p>
+                      </div>
+                      <span className="font-bold text-red-500">52</span>
+                    </div>
+                    <div className="flex items-center justify-between border-b pb-2">
+                      <div>
+                        <p className="font-medium">Budi Santoso</p>
+                        <p className="text-xs text-muted-foreground">Kimia</p>
+                      </div>
+                      <span className="font-bold text-red-500">58</span>
+                    </div>
+                 </div>
               </CardContent>
             </Card>
 
