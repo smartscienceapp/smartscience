@@ -10,6 +10,7 @@ from app.api.v1.soal.zrouter_soal import soal_router
 from app.api.v1.tob.zrouter_tob import tob_router
 from app.api.v1.bab.zrouter_bab import bab_router
 from app.api.v2.leaderboard.zrouter_leaderboard import leaderboard_router 
+from app.api.v2.daftar_nilai.zrouter_daftar_nilai import daftar_nilai_router
 
 Base.metadata.create_all(bind=engine_database) 
 
@@ -66,6 +67,13 @@ app.include_router(
     prefix="/api/v2/leaderboard",
     tags=["Leaderboard"]
 )
+
+app.include_router(
+    daftar_nilai_router,
+    prefix="/api/v2/daftar_nilai",
+    tags=["Daftar Nilai"]
+)
+
 
 # Health Check sederhana
 @app.get("/")

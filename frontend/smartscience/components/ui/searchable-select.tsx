@@ -1,0 +1,106 @@
+"use client"
+
+import * as React from "react"
+import { Check, ChevronsUpDown } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList, // WAJIB ADA: untuk membungkus list item
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+
+interface Option {
+  label: string
+  value: string
+}
+
+interface SearchableSelectProps {
+  options: Option[]
+  value?: string
+  onChange: (value: string) => void
+  placeholder?: string
+  searchPlaceholder?: string
+  emptyMessage?: string
+  disabled?: boolean
+  className?: string
+}
+
+export function SearchableSelect({
+  options,
+  value,
+  onChange,
+  placeholder = "Pilih...",
+  searchPlaceholder = "Cari...",
+  emptyMessage = "Data tidak ditemukan.",
+  disabled = false,
+  className
+}: SearchableSelectProps) {
+  const [open, setOpen] = React.useState(false)
+
+  // Cari label berdasarkan value yang terpilih untuk ditampilkan di tombol
+  const selectedLabel = React.useMemo(() => {
+    return options.find((option) => option.value === value)?.label
+  }, [options, value])
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className={cn("w-full justify-between px-3 font-normal", className)}
+          disabled={disabled}
+        >
+          <span className="truncate">
+            {selectedLabel || placeholder}
+          </span>
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+
+      {/* Width popover menyesuaikan width trigger */}
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+        <Command>
+          <CommandInput placeholder={searchPlaceholder} />
+
+          {/* PERBAIKAN UTAMA: CommandList wajib membungkus Empty & Group */}
+          <CommandList>
+            <CommandEmpty>{emptyMessage}</CommandEmpty>
+            <CommandGroup>
+              {options.map((option) => (
+                <CommandItem
+                  key={option.value}
+                  value={option.label} // Value ini dipakai untuk SEARCH (fuzzy match)
+                  onSelect={() => {
+                    // Saat diklik, kita kirim ID aslinya (option.value)
+                    onChange(option.value)
+                    setOpen(false)
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === option.value ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  {option.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+
+        </Command>
+      </PopoverContent>
+    </Popover>
+  )
+} 

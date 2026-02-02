@@ -69,8 +69,11 @@ class SoalCreate(BaseModel) :
     option : str
     created_by: str
     
-class SoalFind(BaseModel):
-    id_bab: int 
+class SoalFind(BaseModel): 
+    id_bab: int
+    page: int = 1      # Default page 1
+    limit: int = 10    # Default 10 items per page
+    search: Optional[str] = None # Move search to server-side
     
 class SoalUpdate(BaseModel) :
     id_soal: int

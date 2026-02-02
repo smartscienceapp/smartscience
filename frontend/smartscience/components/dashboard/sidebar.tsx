@@ -159,6 +159,17 @@ const menuItems: MenuItem[] = [
       },
     ]
   },
+  {
+    title: "Daftar nilai",
+    icon: FileText,
+    items: [
+      {
+        title: "Daftar Nilai Siswa",
+        href: "/daftar_nilai",
+        roles: ["guru"],
+      },
+    ],
+  }
 ];
 
 export function Sidebar() {
