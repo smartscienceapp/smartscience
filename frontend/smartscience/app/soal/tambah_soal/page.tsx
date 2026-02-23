@@ -207,7 +207,7 @@ export function TambahSoalContent() {
 
     setIsLoading(true);
     try {
-      const payload = { id_bab: parseInt(selectedBabId) };
+      const payload = { id_bab: parseInt(selectedBabId), limit: 100 };
       const response = await axios.post(
         `${API_URL}/api/v1/soal/list_soal`,
         payload,
